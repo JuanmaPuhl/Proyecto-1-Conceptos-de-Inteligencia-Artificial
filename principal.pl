@@ -18,10 +18,38 @@ sustitucion_valida([(A,B)| R]) :- \+pertenece(A,R),valido(A,B),sustitucion_valid
 pertenece(E,[(A,_) | T]) :- E == A.
 pertenece(E,[(A,_) | T]) :- E \== A, pertenece(E,T).
 valido(A,_) :- nonvar(A),imprimir_error.
-valido(_,B) :- var(B),imprimir_error.
-valido(A,B) :- var(A),nonvar(B). %Esto es para el caso simple [(A,b),(C,d),...,(N,n)]
+valido(_,B) :- \+caracter_valido(B),imprimir_error.
+valido(A,B) :- var(A),caracter_valido(B). %Esto es para el caso simple [(A,b),(C,d),...,(N,n)]
 imprimir_error :- write("ERROR: La sustitucion ingresada no es valida"),false.
 %se admite cualquier valor para B, debo hacer que chequee los valores correctos
 %Tengo que ver para el caso en el que el valor es una funcion
+
+caracter_valido(A) :- A == a.
+caracter_valido(A) :- A == b.
+caracter_valido(A) :- A == c.
+caracter_valido(A) :- A == d.
+caracter_valido(A) :- A == e.
+caracter_valido(A) :- A == f.
+caracter_valido(A) :- A == g.
+caracter_valido(A) :- A == h.
+caracter_valido(A) :- A == i.
+caracter_valido(A) :- A == j.
+caracter_valido(A) :- A == k.
+caracter_valido(A) :- A == l.
+caracter_valido(A) :- A == m.
+caracter_valido(A) :- A == n.
+caracter_valido(A) :- A == o.
+caracter_valido(A) :- A == p.
+caracter_valido(A) :- A == q.
+caracter_valido(A) :- A == r.
+caracter_valido(A) :- A == s.
+caracter_valido(A) :- A == t.
+caracter_valido(A) :- A == u.
+caracter_valido(A) :- A == v.
+caracter_valido(A) :- A == w.
+caracter_valido(A) :- A == x.
+caracter_valido(A) :- A == y.
+caracter_valido(A) :- A == z.
+caracter_valido(A) :- functor(A,B,N),caracter_valido(B).
 
 
