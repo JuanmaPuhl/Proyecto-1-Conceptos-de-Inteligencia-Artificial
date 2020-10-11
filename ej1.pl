@@ -13,10 +13,14 @@
 %no es necesario de todas formas porque se asume lista formada correctamente
 sustitucion_valida(X) :- \+is_list(X),write("ERROR: El parametro ingresado no es una lista."),false.
 sustitucion_valida([]) :- true.
-sustitucion_valida([(A,B)| R]) :- valido(A,B),sustitucion_valida(R).
-valido(A,_) :- nonvar(A),write("ERROR: La sustitucion ingresada no es valida"),false.
-valido(_,B) :- var(B),write("ERROR: La sustitucion ingresada no es valida"),false.
+sustitucion_valida([(A,B)| R]) :- pertenece(A,R),imprimir_error.
+sustitucion_valida([(A,B)| R]) :- \+pertenece(A,R),valido(A,B),sustitucion_valida(R).
+pertenece(E,[(A,_) | T]) :- E == A.
+pertenece(E,[(A,_) | T]) :- E \== A, pertenece(E,T).
+valido(A,_) :- nonvar(A),imprimir_error.
+valido(_,B) :- var(B),imprimir_error.
 valido(A,B) :- var(A),nonvar(B). %Esto es para el caso simple [(A,b),(C,d),...,(N,n)]
+imprimir_error :- write("ERROR: La sustitucion ingresada no es valida"),false.
 %se admite cualquier valor para B, debo hacer que chequee los valores correctos
 %Tengo que ver para el caso en el que el valor es una funcion
 
