@@ -50,6 +50,8 @@ caracter_valido(A) :- A == w.
 caracter_valido(A) :- A == x.
 caracter_valido(A) :- A == y.
 caracter_valido(A) :- A == z.
+%Esta parte hay que cambiarla, porque el functor no tiene que ser obligatoriamente de dos argumentos.
+%Ademas hay que revisar que cada uno de los argumentos sean terminos validos
 caracter_valido(A) :- functor(A,B,2),caracter_valido(B).
 
 
