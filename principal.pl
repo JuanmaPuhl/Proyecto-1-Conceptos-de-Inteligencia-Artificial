@@ -18,8 +18,10 @@ sustitucion_valida([(A,B)| R]) :- \+pertenece(A,R),valido(A,B),sustitucion_valid
 pertenece(E,[(A,_) | T]) :- E == A.
 pertenece(E,[(A,_) | T]) :- E \== A, pertenece(E,T).
 valido(A,_) :- nonvar(A),imprimir_error.
-valido(_,B) :- \+caracter_valido(B),imprimir_error.
-valido(A,B) :- var(A),caracter_valido(B). %Esto es para el caso simple [(A,b),(C,d),...,(N,n)]
+valido(_,B) :- nonvar(B),\+caracter_valido(B),imprimir_error.
+valido(_,B) :- var(B).
+valido(A,B) :- var(A),nonvar(B),caracter_valido(B). %Esto es para el caso simple [(A,b),(C,d),...,(N,n)]
+valido(A,B) :- var(A),var(B).
 imprimir_error :- write("ERROR: La sustitucion ingresada no es valida").
 %se admite cualquier valor para B, debo hacer que chequee los valores correctos
 %Tengo que ver para el caso en el que el valor es una funcion
@@ -52,8 +54,10 @@ caracter_valido(A) :- A == y.
 caracter_valido(A) :- A == z.
 %Esta parte hay que cambiarla, porque el functor no tiene que ser obligatoriamente de dos argumentos.
 %Ademas hay que revisar que cada uno de los argumentos sean terminos validos
-caracter_valido(A) :- functor(A,B,N),\+N is 0,caracter_valido(B),chequear_args(A,N).
-chequear_args(A,1) :- arg(1,A,X),caracter_valido(X).
-chequear_args(A,N) :- arg(N,A,X),caracter_valido(X),B is (N-1),chequear_args(A,B).
+caracter_valido(A) :- functor(A,B,N),\+N is 0,nonvar(B),caracter_valido(B),chequear_args(A,N).
+chequear_args(A,1) :- arg(1,A,X),nonvar(X),caracter_valido(X). %Debo chequear si es var o nonvar
+chequear_args(A,1) :- arg(1,A,X),var(X).
+chequear_args(A,N) :- arg(N,A,X),nonvar(X),caracter_valido(X),B is (N-1),chequear_args(A,B).
+chequear_args(A,N) :- arg(N,A,X),var(X),B is (N-1),chequear_args(A,B).
 
 
