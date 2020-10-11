@@ -50,6 +50,6 @@ caracter_valido(A) :- A == w.
 caracter_valido(A) :- A == x.
 caracter_valido(A) :- A == y.
 caracter_valido(A) :- A == z.
-caracter_valido(A) :- functor(A,B,N),caracter_valido(B).
+caracter_valido(A) :- functor(A,B,2),caracter_valido(B).
 
 
