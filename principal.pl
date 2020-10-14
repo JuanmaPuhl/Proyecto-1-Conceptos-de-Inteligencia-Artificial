@@ -23,13 +23,14 @@
 sustitucion_valida(X) :- \+is_list(X),write("ERROR: El parametro ingresado no es una lista.").
 sustitucion_valida([]) :- true.
 sustitucion_valida([(A,B)| R]) :- pertenece(A,R),imprimir_error.
-sustitucion_valida([(A,B)| R]) :- segunda_regla(A,R),imprimir_error.
-sustitucion_valida([(A,B)| R]) :- \+pertenece(A,R),\+segunda_regla(A,R),valido(A,B),sustitucion_valida(R).
+sustitucion_valida([(A,B)| R]) :- \+pertenece(A,R),valido(A,B),sustitucion_valida(R).
 pertenece(E,[(A,_) | T]) :- E == A.
 pertenece(E,[(A,_) | T]) :- E \== A, pertenece(E,T).
-segunda_regla(E,[(_,B) | T]) :- E == B.
-segunda_regla(E,[(_,B) | T]) :- E \== B, segunda_regla(E,T).
-
+/*
+segunda_regla(E,[(_,B) | T]) :- var(B),E == B.
+segunda_regla(E,[(_,B) | T]) :- E \== B, chequear_segunda(E,B).
+segunda_regla(E,[(_,B) | T]) :- E \== B,\+chequear_segunda(E,B), segunda_regla(E,T).
+*/
 
 valido(A,_) :- nonvar(A),imprimir_error.
 valido(_,B) :- nonvar(B),\+caracter_valido(B),imprimir_error.
@@ -68,9 +69,10 @@ caracter_valido(A) :- A == z.
 %Esta parte hay que cambiarla, porque el functor no tiene que ser obligatoriamente de dos argumentos.
 %Ademas hay que revisar que cada uno de los argumentos sean terminos validos
 caracter_valido(A) :- functor(A,B,N),\+N is 0,nonvar(B),caracter_valido(B),chequear_args(A,N).
-chequear_args(A,1) :- arg(1,A,X),nonvar(X),caracter_valido(X). %Debo chequear si es var o nonvar
+chequear_args(A,1) :- write("Entre 1"),arg(1,A,X),nonvar(X),caracter_valido(X). %Debo chequear si es var o nonvar
+chequear_args(A,1) :- write("Entre 1"),arg(1,A,X),nonvar(X),\+caracter_valido(X). %Debo chequear si es var o nonvar
 chequear_args(A,1) :- arg(1,A,X),var(X).
-chequear_args(A,N) :- arg(N,A,X),nonvar(X),caracter_valido(X),B is (N-1),chequear_args(A,B).
+chequear_args(A,N) :- write("Entre 2"),arg(N,A,X),nonvar(X),caracter_valido(X),B is (N-1),chequear_args(A,B).
 chequear_args(A,N) :- arg(N,A,X),var(X),B is (N-1),chequear_args(A,B).
 
 
@@ -80,7 +82,9 @@ reverse([],Z,Z).
 reverse([H|T],Z,Acc) :- reverse(T,Z,[H|Acc]).
 
 %Ahora tengo que verificar recursivamente que se cumpla la segunda propiedad.
-
+chequear_segunda(E,B) :- functor(B,C,N),N\==0,nonvar(C),chequear_args_segunda(E,B,N).
+chequear_args_segunda(E,B,1) :- arg(1,B,X),\+chequear_segunda(E,X),E\==X.
+chequear_args_segunda(E,B,N) :- arg(N,B,X),\+chequear_segunda(E,X),E\==X,Q is N-1,chequear_args_segunda(E,B,Q).
 
 
 
@@ -99,8 +103,30 @@ reverse([H|T],Z,Acc) :- reverse(T,Z,[H|Acc]).
 %   debera mostrarse por pantalla un mensaje que indique lo ocurrido
 
 unificadosPorSustitucion(A,B) :- \+sustitucion_valida(B),write("ERROR: La sustitucion ingresada no es valida").
-unificadosPorSustitucion(A,B) :- sustitucion_valida(B).
+unificadosPorSustitucion(A,B) :- sustitucion_valida(B),sustituir(A,B),write(A). %Ahora tengo que iniciar la sustitucion
+sustituir(L,[]) :- true.
+sustituir(L, [(A1,B1) | T1]) :- pertenece_functor(A1,B1,L),sustituir(L,T1). %Buscar en la cadena 1 si esta la variable
+pertenece_sustituir(E,V,[],ListaNueva) :- write("ERROR: La variable no pertenece").
+pertenece_sustituir(E,V,[(A,B)|T],ListaNueva) :- E == A, B is V.
+pertenece_sustituir(E,V,[(A,B)|T],ListaNueva) :- E\== A, pertenece_sustituir(E,V,T,ListaNueva).
+
+pertenece_functor(E,V,[]) :- true.
+pertenece_functor(E,V,[F | T]) :-   functor(F,Q,W),W\==0,nonvar(Q),caracter_valido(Q),chequear_sustituir_args(F,W,E,V),pertenece_functor(E,V,T).
+chequear_sustituir_args(F,1,E,V) :- arg(1,F,X),nonvar(X).
+chequear_sustituir_args(F,1,E,V) :- arg(1,F,X),var(X),X == E, X =V. 
+chequear_sustituir_args(F,1,E,V) :- arg(1,F,X),var(X),X \== E.
+chequear_sustituir_args(F,W,E,V) :- arg(W,F,X),nonvar(X),H is W - 1,chequear_sustituir_args(F,H,E,V). 
+chequear_sustituir_args(F,W,E,V) :- arg(W,F,X),var(X),X \== E,H is W - 1,chequear_sustituir_args(F,H,E,V).
+chequear_sustituir_args(F,W,E,V) :- arg(W,F,X),var(X),X == E, H is W - 1, X =V,chequear_sustituir_args(F,H,E,V).
+
+imprimirLista([]) :- nl.
+imprimirLista([H | T]) :- write(H),imprimirLista(T).
 
 
+prueba(T,L,NuevaLista):-append(T,['('],T), append(T,L,NuevaLista).
+add(L,[]):- true.
+add(L, Lista,ListaNueva):- append([L],[Lista], ListaNueva).
 
 
+pruebaNueva(L) :- sus(L),write(L).
+sus([P|T]):- P = e.
