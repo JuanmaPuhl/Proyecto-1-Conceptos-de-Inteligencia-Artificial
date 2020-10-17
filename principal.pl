@@ -121,12 +121,3 @@ chequear_sustituir_args(F,W,E,V) :- arg(W,F,X),var(X),X == E, H is W - 1, X =V,c
 
 imprimirLista([]) :- nl.
 imprimirLista([H | T]) :- write(H),imprimirLista(T).
-
-
-prueba(T,L,NuevaLista):-append(T,['('],T), append(T,L,NuevaLista).
-add(L,[]):- true.
-add(L, Lista,ListaNueva):- append([L],[Lista], ListaNueva).
-
-
-pruebaNueva(L) :- sus(L),write(L).
-sus([P|T]):- P = e.
