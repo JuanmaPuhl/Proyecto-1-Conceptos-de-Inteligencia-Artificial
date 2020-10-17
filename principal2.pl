@@ -29,9 +29,7 @@ unificadosPorSustitucion(A,B) :- L = A,sustitucionValida(B),sustituir(L,B),estaU
 unificadosPorSustitucion(A,B) :- sustitucionValida(B),sustituir(A,B),\+estaUnificado(A),write("No es posible unificar la lista de terminos con la sustitucion dada."),true,!.
 sustituir(_,[]) :- true.
 sustituir(L, [(A1,B1) | T1]) :- pertenece_functor(A1,B1,L),sustituir(L,T1). %Buscar en la cadena 1 si esta la variable
-pertenece_sustituir(_,_,[]) :- write("ERROR: La variable no pertenece").
-pertenece_sustituir(E,V,[(A,B)|_]) :- E == A, B is V.
-pertenece_sustituir(E,V,[(A,_)|T]) :- E\== A, pertenece_sustituir(E,V,T).
+
 
 
 
@@ -45,5 +43,5 @@ chequear_sustituir_args(F,W,E,V) :- W>1,arg(W,F,X),var(X),X \== E,H is W - 1,che
 chequear_sustituir_args(F,W,E,V) :- W>1,arg(W,F,X),var(X),X == E, H is W - 1, X =V,chequear_sustituir_args(F,H,E,V).
 
 estaUnificado([H|T]) :- revisar(H,T).
-revisar(_,[]) :- true,!.
+revisar(_,[]) :- true.
 revisar(H,[H1 | T]) :- H == H1, revisar(H1,T).
