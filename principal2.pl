@@ -1,12 +1,14 @@
 sustitucionValida(X) :- \+is_list(X),write("El parametro ingresado no es una lista.").
 sustitucionValida([]) :- true.
 %Busco repeticiones de variable para cumplir la primera regla de sustitucion
-sustitucionValida([(A,_)|T]) :- buscarRepeticion(A,T),imprimirError,true.
-%Si se cumple la primer regla voy a revisar la segunda
-sustitucionValida([(A,_)|T]) :- \+buscarRepeticion(A,T),\+cumplirSegundaRegla(A,T),imprimirError,true.
+sustitucionValida(L) :- sustitucionValidaAux(L),!.
+
+
+sustitucionValidaAux([(A,_)|T]) :- buscarRepeticion(A,T),imprimirError,false,!.
+sustitucionValidaAux([(A,_)|T]) :- \+buscarRepeticion(A,T),\+cumplirSegundaRegla(A,T),imprimirError,false,!.
 %Tengo que chequear la segunda regla con la lista invertida tambien, para evitar errores del tipo [(A,X),(X,b)]
 %Si se cumplen las dos entonces puedo avanzar
-sustitucionValida([(A,_)|T]) :- \+buscarRepeticion(A,T),cumplirSegundaRegla(A,T),true,!.
+sustitucionValidaAux([(A,_)|T]) :- \+buscarRepeticion(A,T),cumplirSegundaRegla(A,T),true,!.
 
 buscarRepeticion(A,L) :- pertenece(A,L).
 pertenece(_,[]) :- false.
@@ -24,9 +26,9 @@ imprimirError :- write("La sustitucion ingresada no es valida").
 
 
 %Ahora tengo que sustituir y ver si unifican
-unificadosPorSustitucion(_,B) :- \+sustitucionValida(B),write("La sustitucion ingresada no es valida"),true,!.
+unificadosPorSustitucion(_,B) :- \+sustitucionValida(B),!.
 unificadosPorSustitucion(A,B) :- L = A,sustitucionValida(B),sustituir(L,B),estaUnificado(L),nth0(0,L,Elemento),write("Es posible unificar la lista de terminos con la sustitucion dada.\n"),write("El termino resultante de aplicar la sustitucion es: "),write(Elemento),true,!. %Ahora tengo que iniciar la sustitucion
-unificadosPorSustitucion(A,B) :- sustitucionValida(B),sustituir(A,B),\+estaUnificado(A),write("No es posible unificar la lista de terminos con la sustitucion dada."),true,!.
+unificadosPorSustitucion(A,B) :- sustitucionValida(B),sustituir(A,B),\+estaUnificado(A),write("No es posible unificar la lista de terminos con la sustitucion dada.\n"),true,!.
 sustituir(_,[]) :- true.
 sustituir(L, [(A1,B1) | T1]) :- pertenece_functor(A1,B1,L),sustituir(L,T1). %Buscar en la cadena 1 si esta la variable
 
