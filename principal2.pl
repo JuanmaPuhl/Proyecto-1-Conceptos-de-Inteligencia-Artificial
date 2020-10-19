@@ -1,14 +1,16 @@
 sustitucionValida(X) :- \+is_list(X),write("El parametro ingresado no es una lista.").
-sustitucionValida([]) :- true.
+sustitucionValida([]) :- imprimirError(),true.
 %Busco repeticiones de variable para cumplir la primera regla de sustitucion
-sustitucionValida(L) :- sustitucionValidaAux(L),!.
+sustitucionValida(L) :- \+sustitucionValidaAux(L),imprimirError,!.
+sustitucionValida(L) :- sustitucionValidaAux(L),reverse(L,ListaReversa,[]),\+sustitucionValidaAux(ListaReversa),imprimirError,!.
+sustitucionValida(L) :- sustitucionValidaAux(L),reverse(L,ListaReversa,[]),sustitucionValidaAux(ListaReversa),!.
 
-
-sustitucionValidaAux([(A,_)|T]) :- buscarRepeticion(A,T),imprimirError,false,!.
-sustitucionValidaAux([(A,_)|T]) :- \+buscarRepeticion(A,T),\+cumplirSegundaRegla(A,T),imprimirError,false,!.
+sustitucionValidaAux([]):-true.
+sustitucionValidaAux([(A,_)|T]) :- buscarRepeticion(A,T),false,!.
+sustitucionValidaAux([(A,_)|T]) :- \+buscarRepeticion(A,T),\+cumplirSegundaRegla(A,T),false,!.
 %Tengo que chequear la segunda regla con la lista invertida tambien, para evitar errores del tipo [(A,X),(X,b)]
 %Si se cumplen las dos entonces puedo avanzar
-sustitucionValidaAux([(A,B)|T]) :- \+buscarRepeticion(A,T),cumplirSegundaRegla(A,T),\+valido(A,B),imprimirError,true,!.
+sustitucionValidaAux([(A,B)|T]) :- \+buscarRepeticion(A,T),cumplirSegundaRegla(A,T),\+valido(A,B),true,!.
 sustitucionValidaAux([(A,B)|T]) :- \+buscarRepeticion(A,T),cumplirSegundaRegla(A,T),valido(A,B),true,!.
 
 buscarRepeticion(A,L) :- pertenece(A,L).
@@ -24,8 +26,8 @@ chequearArgumento(E,B,W) :- W>0,arg(W,B,X),var(X),X\==E,Q is W-1,chequearArgumen
 chequearArgumento(E,B,W) :- W>0,arg(W,B,X),nonvar(X),functor(X,_,Cantidad),Cantidad==0,X\==E,Q is W-1,chequearArgumento(E,B,Q).
 chequearArgumento(E,B,W) :- W>0,arg(W,B,X),nonvar(X),functor(X,_,Cantidad),Cantidad\==0,chequearArgumento(E,X,Cantidad),X\==E,Q is W-1,chequearArgumento(E,B,Q).
 
-valido(A,_) :- nonvar(A),imprimirError.
-valido(_,B) :- nonvar(B),\+caracter_valido(B),imprimirError.
+valido(A,_) :- nonvar(A),false,!.
+valido(_,B) :- nonvar(B),\+caracter_valido(B),false,!.
 valido(_,B) :- var(B).
 valido(A,B) :- var(A),nonvar(B),caracter_valido(B). %Esto es para el caso simple [(A,b),(C,d),...,(N,n)]
 valido(A,B) :- var(A),var(B).
@@ -68,7 +70,8 @@ unificadosPorSustitucion(A,B) :- sustitucionValida(B),sustituir(A,B),\+estaUnifi
 sustituir(_,[]) :- true.
 sustituir(L, [(A1,B1) | T1]) :- pertenece_functor(A1,B1,L),sustituir(L,T1). %Buscar en la cadena 1 si esta la variable
 
-
+reverse([],Z,Z).
+reverse([H|T],Z,Acc) :- reverse(T,Z,[H|Acc]).
 
 
 pertenece_functor(_,_,[]) :- true,!.
