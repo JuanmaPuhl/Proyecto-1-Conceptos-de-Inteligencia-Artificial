@@ -3,14 +3,14 @@ sustitucionValida([]) :- imprimirError(),true.
 %Busco repeticiones de variable para cumplir la primera regla de sustitucion
 sustitucionValida(L) :- \+sustitucionValidaAux(L),imprimirError,!.
 sustitucionValida(L) :- sustitucionValidaAux(L),reverse(L,ListaReversa,[]),\+sustitucionValidaAux(ListaReversa),imprimirError,!.
-sustitucionValida(L) :- sustitucionValidaAux(L),reverse(L,ListaReversa,[]),sustitucionValidaAux(ListaReversa),!.
+sustitucionValida(L) :- sustitucionValidaAux(L),reverse(L,ListaReversa,[]),sustitucionValidaAux(ListaReversa),true,!.
 
 sustitucionValidaAux([]):-true.
 sustitucionValidaAux([(A,_)|T]) :- buscarRepeticion(A,T),false,!.
 sustitucionValidaAux([(A,_)|T]) :- \+buscarRepeticion(A,T),\+cumplirSegundaRegla(A,T),false,!.
 %Tengo que chequear la segunda regla con la lista invertida tambien, para evitar errores del tipo [(A,X),(X,b)]
 %Si se cumplen las dos entonces puedo avanzar
-sustitucionValidaAux([(A,B)|T]) :- \+buscarRepeticion(A,T),cumplirSegundaRegla(A,T),\+valido(A,B),true,!.
+sustitucionValidaAux([(A,B)|T]) :- \+buscarRepeticion(A,T),cumplirSegundaRegla(A,T),\+valido(A,B),false,!.
 sustitucionValidaAux([(A,B)|T]) :- \+buscarRepeticion(A,T),cumplirSegundaRegla(A,T),valido(A,B),true,!.
 
 buscarRepeticion(A,L) :- pertenece(A,L).
@@ -64,9 +64,9 @@ imprimirError :- write("La sustitucion ingresada no es valida").
 
 
 %Ahora tengo que sustituir y ver si unifican
-unificadosPorSustitucion(_,B) :- \+sustitucionValida(B),!.
-unificadosPorSustitucion(A,B) :- L = A,sustitucionValida(B),sustituir(L,B),estaUnificado(L),nth0(0,L,Elemento),write("Es posible unificar la lista de terminos con la sustitucion dada.\n"),write("El termino resultante de aplicar la sustitucion es: "),write(Elemento),true,!. %Ahora tengo que iniciar la sustitucion
-unificadosPorSustitucion(A,B) :- sustitucionValida(B),sustituir(A,B),\+estaUnificado(A),write("No es posible unificar la lista de terminos con la sustitucion dada.\n"),true,!.
+unificadosPorSustitucion(_,B) :- \+sustitucionValidaAux(B),imprimirError,!.
+unificadosPorSustitucion(A,B) :- L = A,sustitucionValidaAux(B),sustituir(L,B),estaUnificado(L),nth0(0,L,Elemento),write("Es posible unificar la lista de terminos con la sustitucion dada.\n"),write("El termino resultante de aplicar la sustitucion es: "),write(Elemento),true,!. %Ahora tengo que iniciar la sustitucion
+unificadosPorSustitucion(A,B) :- sustitucionValidaAux(B),sustituir(A,B),\+estaUnificado(A),write("No es posible unificar la lista de terminos con la sustitucion dada.\n"),true,!.
 sustituir(_,[]) :- true.
 sustituir(L, [(A1,B1) | T1]) :- pertenece_functor(A1,B1,L),sustituir(L,T1). %Buscar en la cadena 1 si esta la variable
 
