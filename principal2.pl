@@ -6,8 +6,8 @@ sustitucionValida(L) :- sustitucionValidaAux(L),reverse(L,ListaReversa,[]),\+sus
 sustitucionValida(L) :- sustitucionValidaAux(L),reverse(L,ListaReversa,[]),sustitucionValidaAux(ListaReversa),true,!.
 
 sustitucionValidaAux([]):-true.
-sustitucionValidaAux([(A,_)|T]) :- buscarRepeticion(A,T),false,!.
-sustitucionValidaAux([(A,_)|T]) :- \+buscarRepeticion(A,T),\+cumplirSegundaRegla(A,T),false,!.
+sustitucionValidaAux([(A,_)|T]) :- buscarRepeticion(A,T),!,false.
+sustitucionValidaAux([(A,_)|T]) :- \+buscarRepeticion(A,T),\+cumplirSegundaRegla(A,T),!,false.
 %Tengo que chequear la segunda regla con la lista invertida tambien, para evitar errores del tipo [(A,X),(X,b)]
 %Si se cumplen las dos entonces puedo avanzar
 sustitucionValidaAux([(A,B)|T]) :- \+buscarRepeticion(A,T),cumplirSegundaRegla(A,T),\+valido(A,B),false,!.
@@ -27,46 +27,20 @@ chequearArgumento(E,B,W) :- W>0,arg(W,B,X),nonvar(X),functor(X,_,Cantidad),Canti
 chequearArgumento(E,B,W) :- W>0,arg(W,B,X),nonvar(X),functor(X,_,Cantidad),Cantidad\==0,chequearArgumento(E,X,Cantidad),X\==E,Q is W-1,chequearArgumento(E,B,Q).
 
 valido(A,_) :- nonvar(A),false,!.
-valido(_,B) :- nonvar(B),\+caracter_valido(B),false,!.
+valido(_,B) :- nonvar(B).%,\+caracter_valido(B),false,!.
 valido(_,B) :- var(B).
-valido(A,B) :- var(A),nonvar(B),caracter_valido(B). %Esto es para el caso simple [(A,b),(C,d),...,(N,n)]
+valido(A,B) :- var(A),nonvar(B).%,caracter_valido(B). %Esto es para el caso simple [(A,b),(C,d),...,(N,n)]
 valido(A,B) :- var(A),var(B).
 
-
-caracter_valido(A) :- A == a.
-caracter_valido(A) :- A == b.
-caracter_valido(A) :- A == c.
-caracter_valido(A) :- A == d.
-caracter_valido(A) :- A == e.
-caracter_valido(A) :- A == f.
-caracter_valido(A) :- A == g.
-caracter_valido(A) :- A == h.
-caracter_valido(A) :- A == i.
-caracter_valido(A) :- A == j.
-caracter_valido(A) :- A == k.
-caracter_valido(A) :- A == l.
-caracter_valido(A) :- A == m.
-caracter_valido(A) :- A == n.
-caracter_valido(A) :- A == o.
-caracter_valido(A) :- A == p.
-caracter_valido(A) :- A == q.
-caracter_valido(A) :- A == r.
-caracter_valido(A) :- A == s.
-caracter_valido(A) :- A == t.
-caracter_valido(A) :- A == u.
-caracter_valido(A) :- A == v.
-caracter_valido(A) :- A == w.
-caracter_valido(A) :- A == x.
-caracter_valido(A) :- A == y.
-caracter_valido(A) :- A == z.
 
 imprimirError :- write("La sustitucion ingresada no es valida").
 
 
 %Ahora tengo que sustituir y ver si unifican
 unificadosPorSustitucion(_,B) :- \+sustitucionValidaAux(B),imprimirError,!.
-unificadosPorSustitucion(A,B) :- L = A,sustitucionValidaAux(B),sustituir(L,B),estaUnificado(L),nth0(0,L,Elemento),write("Es posible unificar la lista de terminos con la sustitucion dada.\n"),write("El termino resultante de aplicar la sustitucion es: "),write(Elemento),true,!. %Ahora tengo que iniciar la sustitucion
-unificadosPorSustitucion(A,B) :- sustitucionValidaAux(B),sustituir(A,B),\+estaUnificado(A),write("No es posible unificar la lista de terminos con la sustitucion dada.\n"),true,!.
+unificadosPorSustitucion(A,B) :- sustitucionValidaAux(B),reverse(B,ListaReversa,[]),\+sustitucionValidaAux(ListaReversa),imprimirError,!.
+unificadosPorSustitucion(A,B) :- sustitucionValidaAux(B),reverse(B,ListaReversa,[]),sustitucionValidaAux(ListaReversa),sustituir(A,B),estaUnificado(A),nth0(0,A,Elemento),write("Es posible unificar la lista de terminos con la sustitucion dada.\n"),write("El termino resultante de aplicar la sustitucion es: "),write(Elemento),true,!. %Ahora tengo que iniciar la sustitucion
+unificadosPorSustitucion(A,B) :- sustitucionValidaAux(B),reverse(B,ListaReversa,[]),sustitucionValidaAux(ListaReversa),sustituir(A,B),\+estaUnificado(A),write("No es posible unificar la lista de terminos con la sustitucion dada.\n"),true,!.
 sustituir(_,[]) :- true.
 sustituir(L, [(A1,B1) | T1]) :- pertenece_functor(A1,B1,L),sustituir(L,T1). %Buscar en la cadena 1 si esta la variable
 
