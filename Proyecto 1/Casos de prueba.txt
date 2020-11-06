@@ -1,0 +1,59 @@
+#PRUEBAS ENUNCIADO
+
+?- sustitucionValida([(A, t), (B, J), (C, t(X, p(D)))]).
+true.
+----------------------------------------------------------------------------
+?- sustitucionValida([(A, t), (B, J), (A, t(X, p(D)))]).
+La sustitucion ingresada no es valida.
+true.
+
+----------------------------------------------------------------------------
+?- sustitucionValida([(A, t), (B, J), (C, t(X, p(D))), (D, z)]).
+La sustitucion ingresada no es valida.
+true.
+----------------------------------------------------------------------------
+?- sustitucionValida([(A, t), (B, t), (C, t(X, p(D)))]).
+true.
+
+?- unificadosPorSustitucion([t(X), t(a), t(B)], [(X, a), (B, a)]).
+Es posible unificar la lista de terminos con la sustitucion dada.
+El termino resultante de aplicar la sustitucion es: t(a)
+true.
+----------------------------------------------------------------------------
+?- unificadosPorSustitucion([p(X,b), p(Y,b)], [(X, a), (Y, f(Z))]).
+No es posible unificar la lista de terminos con la sustitucion dada.
+true.
+----------------------------------------------------------------------------
+?- unificadosPorSustitucion([p(X,b), p(Y,b)], [(X, f(a)), (Y, f(a))]).
+Es posible unificar la lista de terminos con la sustitucion dada.
+El termino resultante de aplicar la sustitucion es: p(f(a),b)
+true.
+----------------------------------------------------------------------------
+?- unificadosPorSustitucion([p(X,b), p(Y,b)], [(X, a), (X, b)]).
+La sustitucion ingresada no es valida.
+true.
+
+#OTRAS PRUEBAS
+
+sustitucionValida([(X,f(d,c(q,q(t(x,Y))))),(Y,m)]). 
+La sustitucion ingresada no es valida
+true.
+
+sustitucionValida([(X,f(d,c(q,q(t(x,m))))),(Y,m)]).  
+true.
+
+
+sustitucionValida([(X,a),(D,f(X)),(Y,Q)]). 
+La sustitucion ingresada no es valida
+true.
+
+
+unificadosPorSustitucion([p(X,y,a),h(X,y,a)],[(X,m),(H,d)]).
+No es posible unificar la lista de terminos con la sustitucion dada.
+
+unificadosPorSustitucion([p(X,y,a),p(H,y,a)],[(X,m),(H,m)]). 
+Es posible unificar la lista de terminos con la sustitucion dada.
+El termino resultante de aplicar la sustitucion es: p(m,y,a)
+
+unificadosPorSustitucion([p(X,y,a),p(H,y,a)],[(X,f(d,c(q,q(t(x,Y))))),(Y,m)]).  
+La sustitucion ingresada no es valida

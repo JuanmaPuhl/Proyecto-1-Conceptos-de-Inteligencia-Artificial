@@ -1,0 +1,7 @@
+====================================LEEME======================================
+Limitación/Observación del segundo inciso.
+
+	Al terminar la ejecucion del segundo inciso, se devuelve el 
+	mensaje correspondiente, sin embargo, por la manera en que está
+	implementado no se muestra el mensaje true (queda implicito), 
+	sino que muestra la/s solucion/es para la/s cual/es unifica.
