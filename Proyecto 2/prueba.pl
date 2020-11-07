@@ -1,3 +1,3 @@
-ejemplo("Juan").
-ejemplo("Alan").
-ejemplo("Eze").
+ejemplo(a,"Juan").
+ejemplo(b,"Alan").
+ejemplo(c,"Alan").
