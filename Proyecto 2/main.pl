@@ -1,6 +1,8 @@
-construirAD(InputFile,OutputFile):-leer(InputFile).
-
+construirAD(InputFile,OutputFile):-not(checkEmpty(InputFile)),leer(InputFile).
+checkEmpty(File):-open(File,read,Str),isEmpty(Str).
 ejemplo(A):-write("HELLO, "),write(A),write(".\n").
+
+isEmpty(Str):-at_end_of_stream(Str).
 
 leer(InputFile) :-
     open(InputFile, read, Str),
