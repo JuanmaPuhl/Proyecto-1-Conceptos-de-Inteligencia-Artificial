@@ -17,7 +17,7 @@ Para cada uno entonces debo guardar en una lista el par (Nombre,Cantidad) y una 
 Sort creo que los ordena.
 */
 
-buscarDefault(ListaInput, Default):-buscarApariciones(ListaInput,ListaOutput),buscarMayor(ListaOutput,Default),write("Default: "),write(Default).
+buscarDefault(ListaInput, Default):-buscarApariciones(ListaInput,ListaOutput),buscarMayor(ListaOutput,Default),write(Default),generarArbolDecisionShell(Default).
 buscarApariciones(ListaInput,ListaOutput):-buscarAparicionesAux(ListaInput,[],ListaOutput).
 buscarAparicionesAux([],ListaIntermedia,ListaOutput):-append(ListaNueva,ListaIntermedia,ListaOutput),!.
 buscarAparicionesAux([H|T],ListaIntermedia,ListaOutput) :-
@@ -33,9 +33,43 @@ obtenerMayor([(A,(B,C))|T],Default):- Default = C.
 
 /*
 Ahora tengo que generar el arbol de decision
+ALGORITMO:
+
+    generarArbolDecision(ejemplos,atributos,default)
+        si ejemplos esta vacio
+            retornar default
+        sino
+            si todos los ejemplos tienen la misma clasificacion
+                retornar clasificacion
+            sino
+                best = elegirAtributo(atributos,ejemplos)
+                arbol = arbol con raiz best
+                para cada Vi de best hacer
+                    ejemplos = {elementos de examples con best = Vi}
+                    subArbol = generarArbolDecision(ejemplos,atributos-best,majority_values(ejemplosI))
+                    añadir una rama a arbol con etiqueta Vi y subarbol subArbol
+                fin
+        retornar arbol
 */
 
-generarArbolDecision.
+generarArbolDecisionShell(Default) :- 
+                                    findall(ejemplo(ID,Atributos,Clasificacion),ejemplo(ID,Atributos,Clasificacion),ListaEjemplos),
+                                    findall(Atributos,ejemplo(1,Atributos,_),ListaAtributos),
+                                    nth0(0,ListaAtributos,Lista),
+                                    recuperarAtributosShell(Lista,ListaFinalAtributos),
+                                    nl,
+                                    write(ListaFinalAtributos),
+                                    generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default).
+
+
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,write(Default).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default).
+
+recuperarAtributosShell(ListaAtributos,ListaFinal):-recuperarAtributos(ListaAtributos,_,ListaFinal).
+recuperarAtributos([],ListaIntermedia,ListaFinal):- ListaFinal = ListaIntermedia.
+recuperarAtributos([(Atributo,Valor)|T],ListaIntermedia,ListaFinal):- ListaAux=[Atributo],append(ListaIntermedia,ListaAux,ListaNueva),recuperarAtributos(T,ListaNueva,ListaFinal).
+
+
 
 isEmpty(Str):-at_end_of_stream(Str).
 
