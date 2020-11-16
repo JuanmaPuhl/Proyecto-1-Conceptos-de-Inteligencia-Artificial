@@ -53,21 +53,25 @@ ALGORITMO:
 */
 
 generarArbolDecisionShell(Default) :- 
-                                    findall(ejemplo(ID,Atributos,Clasificacion),ejemplo(ID,Atributos,Clasificacion),ListaEjemplos),
+                                    findall((ID,Atributos,Clasificacion),ejemplo(ID,Atributos,Clasificacion),ListaEjemplos),
                                     findall(Atributos,ejemplo(1,Atributos,_),ListaAtributos),
                                     nth0(0,ListaAtributos,Lista),
                                     recuperarAtributosShell(Lista,ListaFinalAtributos),
                                     nl,
-                                    write(ListaFinalAtributos),
+                                    writeln(ListaFinalAtributos),
                                     generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default).
 
 
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,write(Default).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,writeln(Default).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-verificarIgualesShell(ListaEjemplos).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General").
 
 recuperarAtributosShell(ListaAtributos,ListaFinal):-recuperarAtributos(ListaAtributos,_,ListaFinal).
 recuperarAtributos([],ListaIntermedia,ListaFinal):- ListaFinal = ListaIntermedia.
 recuperarAtributos([(Atributo,Valor)|T],ListaIntermedia,ListaFinal):- ListaAux=[Atributo],append(ListaIntermedia,ListaAux,ListaNueva),recuperarAtributos(T,ListaNueva,ListaFinal).
+
+
+elegirAtributo(ListaAtributos,ListaEjemplos).
 
 
 
@@ -78,3 +82,7 @@ leer(InputFile) :- open(InputFile, read, Str), read_file(Str,Lines), close(Str),
 read_file(Stream,[]) :- at_end_of_stream(Stream).
 
 read_file(Stream,[X|L]) :- \+ at_end_of_stream(Stream), read(Stream,X), call(X), read_file(Stream,L).
+
+verificarIgualesShell([(_,_,(_,E))|T]):-verificarIguales(T,E).
+verificarIguales([],E).
+verificarIguales([(_,_,(_,Calificacion))|T],E):-Calificacion==E,verificarIguales(T,E).
