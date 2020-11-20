@@ -89,11 +89,13 @@ buscarAux(Atributo,Valor,L,Lista).
 */
 
 
-auxiliar(ListaAtributos,ListaEjemplos):-buscarCadaAtributo(ListaAtributos,ListaEjemplos,[],ListaFinal).
-buscarCadaAtributo(_,[],ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia,writeln(ListaFinal).
-buscarCadaAtributo([Att|T],[(ID,Atributos,Calificacion)|Tail],ListaIntermedia,ListaFinal):-
+auxiliar(ListaAtributos,ListaEjemplos):-buscarAtributosAux(ListaAtributos,ListaEjemplos,[],ListaFinal),!.
+buscarAtributosAux([],ListaEjemplos,ListaIntermedia,ListaFinal):-!.
+buscarAtributosAux([Att|T],ListaEjemplos,ListaIntermedia,ListaFinal):-buscarCadaAtributo(Att,ListaEjemplos,ListaIntermedia,ListaFinal),buscarAtributosAux(T,ListaEjemplos,[],Lista).
+buscarCadaAtributo(_,[],ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia,write("Lista Final: "),writeln(ListaFinal),!.
+buscarCadaAtributo(Att,[(ID,Atributos,(A,Calificacion))|Tail],ListaIntermedia,ListaFinal):-
                                                                             mirarEnLista(Att,Atributos,Calificacion,ListaIntermedia,ListaFinal),
-                                                                            buscarCadaAtributo([Att|T],Tail,ListaFinal,Lista).
+                                                                            buscarCadaAtributo(Att,Tail,ListaFinal,Lista).
 mirarEnLista(Att,[],_,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-
                                                                             Att==Nombre,
