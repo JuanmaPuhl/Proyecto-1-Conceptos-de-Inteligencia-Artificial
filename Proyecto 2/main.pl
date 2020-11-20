@@ -87,6 +87,26 @@ buscarAux(Atributo,Valor,[(Nombre,Value)|T],[Head|Tail]):-Atributo == Nombre, Va
 buscarAux(Atributo,Valor,[(Nombre,Value)|T],Lista):-Atributo \== Nombre,buscarAux(Atributo,Valor,T,Lista).
 buscarAux(Atributo,Valor,L,Lista).
 
+
+
+auxiliar(ListaAtributos,ListaEjemplos):-buscarCadaAtributo(ListaAtributos,ListaEjemplos,[],ListaFinal).
+buscarCadaAtributo(_,[],ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia,writeln(ListaFinal).
+buscarCadaAtributo([Att|T],[(ID,Atributos,Calificacion)|Tail],ListaIntermedia,ListaFinal):-mirarEnLista(Att,Atributos,Calificacion,ListaIntermedia,ListaFinal),buscarCadaAtributo([Att|T],Tail,ListaFinal,Lista).
+mirarEnLista(Att,[],_,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
+mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-Att==Nombre,Elem=(Att,Valor,Calificacion,1),length(ListaIntermedia,Size),member(Elem,ListaIntermedia),buscarEnLista(Elem,ListaIntermedia,Ubicacion),nth0(Ubicacion,ListaIntermedia,(N,V,C,L)),Cuantity is L + 1,Aux = (N,V,C,Cuantity),write("Listorti"),replaceP((N,V,C,L),Aux,ListaIntermedia,ListaNueva), ListaFinal = ListaNueva.
+mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-Att==Nombre,Elem=(Att,Valor,Calificacion,1),length(ListaIntermedia,Size),writeln(Size),append([Elem],ListaIntermedia,ListaNueva),ListaFinal = ListaNueva.
+mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-mirarEnLista(Att,T,Calificacion,ListaIntermedia,ListaFinal).
+
+buscarEnLista(ElementoBuscado,Lista,Posicion):-buscarEnListaAux(ElementoBuscado,Lista,0,Posicion).
+
+buscarEnListaAux(Elemento,Lista,Index,PosicionFinal):-nth0(Index,Lista,E),E\==Elemento, Q is Index + 1, buscarEnListaAux(Elemento,Lista,Q,PosicionFinal).
+buscarEnListaAux(Elemento,Lista,Index,PosicionFinal):-nth0(Index,Lista,E),E==Elemento, PosicionFinal = Index.
+
+replaceP(_, _, [], []).
+replaceP(O, R, [O|T], [R|T2]) :- replaceP(O, R, T, T2).
+replaceP(O, R, [H|T], [H|T2]) :- dif(H,O), replaceP(O, R, T, T2).
+
+
 isEmpty(Str):-at_end_of_stream(Str).
 
 leer(InputFile) :- open(InputFile, read, Str), read_file(Str,Lines), close(Str),!.
