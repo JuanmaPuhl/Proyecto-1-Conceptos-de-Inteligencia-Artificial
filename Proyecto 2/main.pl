@@ -91,10 +91,26 @@ buscarAux(Atributo,Valor,L,Lista).
 
 auxiliar(ListaAtributos,ListaEjemplos):-buscarCadaAtributo(ListaAtributos,ListaEjemplos,[],ListaFinal).
 buscarCadaAtributo(_,[],ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia,writeln(ListaFinal).
-buscarCadaAtributo([Att|T],[(ID,Atributos,Calificacion)|Tail],ListaIntermedia,ListaFinal):-mirarEnLista(Att,Atributos,Calificacion,ListaIntermedia,ListaFinal),buscarCadaAtributo([Att|T],Tail,ListaFinal,Lista).
+buscarCadaAtributo([Att|T],[(ID,Atributos,Calificacion)|Tail],ListaIntermedia,ListaFinal):-
+                                                                            mirarEnLista(Att,Atributos,Calificacion,ListaIntermedia,ListaFinal),
+                                                                            buscarCadaAtributo([Att|T],Tail,ListaFinal,Lista).
 mirarEnLista(Att,[],_,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
-mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-Att==Nombre,Elem=(Att,Valor,Calificacion,1),length(ListaIntermedia,Size),member(Elem,ListaIntermedia),buscarEnLista(Elem,ListaIntermedia,Ubicacion),nth0(Ubicacion,ListaIntermedia,(N,V,C,L)),Cuantity is L + 1,Aux = (N,V,C,Cuantity),write("Listorti"),replaceP((N,V,C,L),Aux,ListaIntermedia,ListaNueva), ListaFinal = ListaNueva.
-mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-Att==Nombre,Elem=(Att,Valor,Calificacion,1),length(ListaIntermedia,Size),writeln(Size),append([Elem],ListaIntermedia,ListaNueva),ListaFinal = ListaNueva.
+mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-
+                                                                            Att==Nombre,
+                                                                            Elem=(Att,Valor,Calificacion,_),
+                                                                            length(ListaIntermedia,Size),
+                                                                            member(Elem,ListaIntermedia),
+                                                                            buscarEnLista(Elem,ListaIntermedia,Ubicacion),
+                                                                            nth0(Ubicacion,ListaIntermedia,(N,V,C,L)),
+                                                                            Quantity is L + 1,
+                                                                            Aux = (N,V,C,Quantity),
+                                                                            replaceP((N,V,C,L),Aux,ListaIntermedia,ListaNueva),
+                                                                            ListaFinal = ListaNueva.
+mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-
+                                                                            Att==Nombre,Elem=(Att,Valor,Calificacion,1),
+                                                                            length(ListaIntermedia,Size),
+                                                                            append([Elem],ListaIntermedia,ListaNueva),
+                                                                            ListaFinal = ListaNueva.
 mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-mirarEnLista(Att,T,Calificacion,ListaIntermedia,ListaFinal).
 
 buscarEnLista(ElementoBuscado,Lista,Posicion):-buscarEnListaAux(ElementoBuscado,Lista,0,Posicion).
