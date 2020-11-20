@@ -70,10 +70,21 @@ recuperarAtributosShell(ListaAtributos,ListaFinal):-recuperarAtributos(ListaAtri
 recuperarAtributos([],ListaIntermedia,ListaFinal):- ListaFinal = ListaIntermedia.
 recuperarAtributos([(Atributo,Valor)|T],ListaIntermedia,ListaFinal):- ListaAux=[Atributo],append(ListaIntermedia,ListaAux,ListaNueva),recuperarAtributos(T,ListaNueva,ListaFinal).
 
+/*
+Tengo que buscar en la lista de ejemplos, todos los que tengan el atributo actual
+*/
+elegirAtributo(ListaAtributos,ListaEjemplos):-elegirAtributoAux(ListaAtributos,ListaEjemplos).
 
-elegirAtributo(ListaAtributos,ListaEjemplos).
-
-
+elegirAtributoAux([Atributo|Tail],[(ID,Atributos,Calificacion)|T]):-buscarCantidadAparicionesAtributo(Atributo,Atributos,[(Id,Atributos,Calificacion)|T],0).
+buscarCantidadAparicionesAtributo(Atributo,Lista,[],Cantidad).
+buscarCantidadAparicionesAtributo(Atributo,[(Nombre,Valor)|T],Lista,Cantidad):-Atributo == Nombre, Q is Cantidad + 1,buscarValor(Atributo,Valor,Lista).
+buscarValor(Atributo,Valor,[]):-writeln("Termine").
+buscarValor(Atributo,Valor,[(Id,Atributos,Calificacion)|T]):-buscarAux(Atributo,Valor,Atributos,[(Id,Atributos,Calificacion)|T]).
+buscarAux(Atributo,Valor,[],[]):-writeln("Ya termine con el atributo").
+buscarAux(Atributo,Valor,[(Nombre,Value)|T],[]):-Atributo==Nombre,Valor==Value, writeln("Termine la lista").
+buscarAux(Atributo,Valor,[(Nombre,Value)|T],[]):-buscarAux(Atributo,Valor,T,[]).
+buscarAux(Atributo,Valor,[(Nombre,Value)|T],[Head|Tail]):-Atributo == Nombre, Valor == Value, writeln("JIJI"),buscarValor(Atributo,Valor,Tail).
+buscarAux(Atributo,Valor,[(Nombre,Value)|T],Lista):-buscarAux(Atributo,Valor,T,Lista).
 
 isEmpty(Str):-at_end_of_stream(Str).
 
