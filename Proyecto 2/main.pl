@@ -84,7 +84,8 @@ buscarAux(Atributo,Valor,[],[]):-writeln("Ya termine con el atributo").
 buscarAux(Atributo,Valor,[(Nombre,Value)|T],[]):-Atributo==Nombre,Valor==Value, writeln("Termine la lista").
 buscarAux(Atributo,Valor,[(Nombre,Value)|T],[]):-buscarAux(Atributo,Valor,T,[]).
 buscarAux(Atributo,Valor,[(Nombre,Value)|T],[Head|Tail]):-Atributo == Nombre, Valor == Value, writeln("JIJI"),buscarValor(Atributo,Valor,Tail).
-buscarAux(Atributo,Valor,[(Nombre,Value)|T],Lista):-buscarAux(Atributo,Valor,T,Lista).
+buscarAux(Atributo,Valor,[(Nombre,Value)|T],Lista):-Atributo \== Nombre,buscarAux(Atributo,Valor,T,Lista).
+buscarAux(Atributo,Valor,L,Lista).
 
 isEmpty(Str):-at_end_of_stream(Str).
 
