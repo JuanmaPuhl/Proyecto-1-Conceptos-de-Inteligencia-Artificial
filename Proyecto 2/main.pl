@@ -73,8 +73,8 @@ recuperarAtributos([(Atributo,Valor)|T],ListaIntermedia,ListaFinal):- ListaAux=[
 /*
 Tengo que buscar en la lista de ejemplos, todos los que tengan el atributo actual
 */
+/*
 elegirAtributo(ListaAtributos,ListaEjemplos):-elegirAtributoAux(ListaAtributos,ListaEjemplos).
-
 elegirAtributoAux([Atributo|Tail],[(ID,Atributos,Calificacion)|T]):-buscarCantidadAparicionesAtributo(Atributo,Atributos,[(Id,Atributos,Calificacion)|T],0).
 buscarCantidadAparicionesAtributo(Atributo,Lista,[],Cantidad).
 buscarCantidadAparicionesAtributo(Atributo,[(Nombre,Valor)|T],Lista,Cantidad):-Atributo == Nombre, Q is Cantidad + 1,buscarValor(Atributo,Valor,Lista).
@@ -86,7 +86,7 @@ buscarAux(Atributo,Valor,[(Nombre,Value)|T],[]):-buscarAux(Atributo,Valor,T,[]).
 buscarAux(Atributo,Valor,[(Nombre,Value)|T],[Head|Tail]):-Atributo == Nombre, Valor == Value, writeln("JIJI"),buscarValor(Atributo,Valor,Tail).
 buscarAux(Atributo,Valor,[(Nombre,Value)|T],Lista):-Atributo \== Nombre,buscarAux(Atributo,Valor,T,Lista).
 buscarAux(Atributo,Valor,L,Lista).
-
+*/
 
 
 auxiliar(ListaAtributos,ListaEjemplos):-buscarCadaAtributo(ListaAtributos,ListaEjemplos,[],ListaFinal).
