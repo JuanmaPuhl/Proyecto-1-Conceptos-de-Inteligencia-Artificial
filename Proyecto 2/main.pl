@@ -112,15 +112,23 @@ searchAttribute([],ListaEjemplos).
 searchAttribute([Attr|Tail],ListaEjemplos):-findall((Attr,Valor,Calificacion),(member((ID,L,(_,Calificacion)),ListaEjemplos),member((Attr,Valor),L)),ListaNueva),
                     findall(Clasificacion,member((_,_,(_,Clasificacion)),ListaEjemplos),ListaClasificacion),
                     sort(ListaClasificacion,ListaClasificacionSinRepetidos),
-                    buscarTotalAtributosPorClasificacion(ListaClasificacionSinRepetidos,Attr,ListaNueva),
-                    writeln(ListaNueva),searchAttribute(Tail,ListaEjemplos).
+                    write("Atributo: "),
+                    writeln(Attr),
+                    buscarTotalAtributosPorClasificacion(ListaClasificacionSinRepetidos,Attr,ListaNueva),searchAttribute(Tail,ListaEjemplos).
 replaceP(_, _, [], []).
 replaceP(O, R, [O|T], [R|T2]) :- replaceP(O, R, T, T2).
 replaceP(O, R, [H|T], [H|T2]) :- dif(H,O), replaceP(O, R, T, T2).
-buscarTotalAtributosPorClasificacion([],Attr,Valor,Lista).
-buscarTotalAtributosPorClasificacion([Clasificacion|T],Attr,Lista):-findall(Value,member((_,Value,Clasificacion),Lista),ListaNueva),length(ListaNueva,Size),write("Atributo "),write(Attr),write(" Clasificacion: "),write(Clasificacion),write("Cantidad: "),writeln(Size),buscarTotalAtributosPorClasificacion(T,Attr,Valor,Lista).
-buscarParcialAtributosPorClasificacion([],ListaValores,Attr,Lista).
-buscarParcialAtributosPorClasificacion(ListaClasificacion,[],Attr,Lista).
+buscarTotalAtributosPorClasificacion([],Attr,Lista).
+buscarTotalAtributosPorClasificacion([Clasificacion|T],Attr,Lista):-findall(Value,member((_,Value,_),Lista),ListaValores),
+                                                                    sort(ListaValores,ListaValoresSinRepetidos),
+                                                                    buscarTotal(ListaValoresSinRepetidos,Lista),
+                                                                    write("Clasificacion: "),write(Clasificacion),
+                                                                    buscarParcial(Clasificacion,ListaValoresSinRepetidos,Attr,Lista),
+                                                                    buscarTotalAtributosPorClasificacion(T,Attr,Lista).
+buscarTotal([],Lista).
+buscarTotal([Valor|T],Lista):-findall(Valor,member((_,Valor,_),Lista),ListaNueva),length(ListaNueva,Size),write("Valor: "),write(Valor),write(" Total: "),writeln(Size),buscarTotal(T,Lista).
+buscarParcial(Clasificacion,[],Attr,Lista).
+buscarParcial(Clasificacion,[Valor|T],Attr,Lista):-findall(Valor,member((Attr,Valor,Clasificacion),Lista),ListaEncontrada),length(ListaEncontrada,Size),write(" Valor: "),write(Valor),write(" Cantidad: "),writeln(Size),buscarParcial(Clasificacion,T,Attr,Lista).
 isEmpty(Str):-at_end_of_stream(Str).
 
 leer(InputFile) :- open(InputFile, read, Str), read_file(Str,Lines), close(Str),!.
