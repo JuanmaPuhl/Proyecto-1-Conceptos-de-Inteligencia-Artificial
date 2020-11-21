@@ -73,43 +73,28 @@ recuperarAtributos([(Atributo,Valor)|T],ListaIntermedia,ListaFinal):- ListaAux=[
 /*
 Tengo que buscar en la lista de ejemplos, todos los que tengan el atributo actual
 */
-/*
-elegirAtributo(ListaAtributos,ListaEjemplos):-elegirAtributoAux(ListaAtributos,ListaEjemplos).
-elegirAtributoAux([Atributo|Tail],[(ID,Atributos,Calificacion)|T]):-buscarCantidadAparicionesAtributo(Atributo,Atributos,[(Id,Atributos,Calificacion)|T],0).
-buscarCantidadAparicionesAtributo(Atributo,Lista,[],Cantidad).
-buscarCantidadAparicionesAtributo(Atributo,[(Nombre,Valor)|T],Lista,Cantidad):-Atributo == Nombre, Q is Cantidad + 1,buscarValor(Atributo,Valor,Lista).
-buscarValor(Atributo,Valor,[]):-writeln("Termine").
-buscarValor(Atributo,Valor,[(Id,Atributos,Calificacion)|T]):-buscarAux(Atributo,Valor,Atributos,[(Id,Atributos,Calificacion)|T]).
-buscarAux(Atributo,Valor,[],[]):-writeln("Ya termine con el atributo").
-buscarAux(Atributo,Valor,[(Nombre,Value)|T],[]):-Atributo==Nombre,Valor==Value, writeln("Termine la lista").
-buscarAux(Atributo,Valor,[(Nombre,Value)|T],[]):-buscarAux(Atributo,Valor,T,[]).
-buscarAux(Atributo,Valor,[(Nombre,Value)|T],[Head|Tail]):-Atributo == Nombre, Valor == Value, writeln("JIJI"),buscarValor(Atributo,Valor,Tail).
-buscarAux(Atributo,Valor,[(Nombre,Value)|T],Lista):-Atributo \== Nombre,buscarAux(Atributo,Valor,T,Lista).
-buscarAux(Atributo,Valor,L,Lista).
-*/
-
-
-auxiliar(ListaAtributos,ListaEjemplos):-buscarAtributosAux(ListaAtributos,ListaEjemplos,[],ListaFinal),!.
+/*buscarAtributosAux(ListaAtributos,ListaEjemplos,[],ListaFinal),!.*/
+auxiliar(ListaAtributos,ListaEjemplos):-searchAttribute(ListaAtributos,ListaEjemplos).
 buscarAtributosAux([],ListaEjemplos,ListaIntermedia,ListaFinal):-!.
 buscarAtributosAux([Att|T],ListaEjemplos,ListaIntermedia,ListaFinal):-buscarCadaAtributo(Att,ListaEjemplos,ListaIntermedia,ListaFinal),buscarAtributosAux(T,ListaEjemplos,[],Lista).
-buscarCadaAtributo(_,[],ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia,write("Lista Final: "),writeln(ListaFinal),!.
+buscarCadaAtributo(Att,[],ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia,write("Atributo "),write(Att),write(": "),writeln(ListaFinal),contarTotal(ListaFinal,ToReturn),!.
 buscarCadaAtributo(Att,[(ID,Atributos,(A,Calificacion))|Tail],ListaIntermedia,ListaFinal):-
                                                                             mirarEnLista(Att,Atributos,Calificacion,ListaIntermedia,ListaFinal),
                                                                             buscarCadaAtributo(Att,Tail,ListaFinal,Lista).
 mirarEnLista(Att,[],_,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-
                                                                             Att==Nombre,
-                                                                            Elem=(Att,Valor,Calificacion,_),
+                                                                            Elem=(Valor,Calificacion,_),
                                                                             length(ListaIntermedia,Size),
                                                                             member(Elem,ListaIntermedia),
                                                                             buscarEnLista(Elem,ListaIntermedia,Ubicacion),
-                                                                            nth0(Ubicacion,ListaIntermedia,(N,V,C,L)),
+                                                                            nth0(Ubicacion,ListaIntermedia,(V,C,L)),
                                                                             Quantity is L + 1,
-                                                                            Aux = (N,V,C,Quantity),
-                                                                            replaceP((N,V,C,L),Aux,ListaIntermedia,ListaNueva),
+                                                                            Aux = (V,C,Quantity),
+                                                                            replaceP((V,C,L),Aux,ListaIntermedia,ListaNueva),
                                                                             ListaFinal = ListaNueva.
 mirarEnLista(Att,[(Nombre,Valor)|T],Calificacion,ListaIntermedia,ListaFinal):-
-                                                                            Att==Nombre,Elem=(Att,Valor,Calificacion,1),
+                                                                            Att==Nombre,Elem=(Valor,Calificacion,1),
                                                                             length(ListaIntermedia,Size),
                                                                             append([Elem],ListaIntermedia,ListaNueva),
                                                                             ListaFinal = ListaNueva.
@@ -119,6 +104,12 @@ buscarEnLista(ElementoBuscado,Lista,Posicion):-buscarEnListaAux(ElementoBuscado,
 
 buscarEnListaAux(Elemento,Lista,Index,PosicionFinal):-nth0(Index,Lista,E),E\==Elemento, Q is Index + 1, buscarEnListaAux(Elemento,Lista,Q,PosicionFinal).
 buscarEnListaAux(Elemento,Lista,Index,PosicionFinal):-nth0(Index,Lista,E),E==Elemento, PosicionFinal = Index.
+
+contarTotal(Lista,ToReturn):-contarTotalAux(Lista,[],ToReturn).
+contarTotalAux([(Valor,Calificacion,Cantidad)|T],ListaIntermedia,ToReturn).
+
+searchAttribute([],ListaEjemplos).
+searchAttribute([Attr|Tail],ListaEjemplos):-findall((Attr,Valor,Calificacion),member((ID,[(Attr,Valor)|T],(_,Calificacion)),ListaEjemplos),ListaNueva),writeln(ListaNueva),searchAttribute(T,ListaEjemplos).
 
 replaceP(_, _, [], []).
 replaceP(O, R, [O|T], [R|T2]) :- replaceP(O, R, T, T2).
