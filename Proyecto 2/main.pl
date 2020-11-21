@@ -109,15 +109,18 @@ contarTotal(Lista,ToReturn):-contarTotalAux(Lista,[],ToReturn).
 contarTotalAux([(Valor,Calificacion,Cantidad)|T],ListaIntermedia,ToReturn).
 
 searchAttribute([],ListaEjemplos).
-searchAttribute([Attr|Tail],[]).
-searchAttribute([Attr|Tail],ListaEjemplos):-findall((Attr,Valor,Calificacion),(member((ID,L,(_,Calificacion)),ListaEjemplos),member((Attr,Valor),L)),ListaNueva),writeln(ListaNueva),searchAttribute(Tail,ListaEjemplos).
-/*searchAttribute([Attr|Tail],[(Atributo,Valor)|T]):-findall((Attr,Valor,Calificacion),member((ID,T,(_,Calificacion)),ListaEjemplos),ListaNueva),writeln(ListaNueva),searchAttribute(Tail,ListaEjemplos).
-*/
+searchAttribute([Attr|Tail],ListaEjemplos):-findall((Attr,Valor,Calificacion),(member((ID,L,(_,Calificacion)),ListaEjemplos),member((Attr,Valor),L)),ListaNueva),
+                    findall(Clasificacion,member((_,_,(_,Clasificacion)),ListaEjemplos),ListaClasificacion),
+                    sort(ListaClasificacion,ListaClasificacionSinRepetidos),
+                    buscarTotalAtributosPorClasificacion(ListaClasificacionSinRepetidos,Attr,ListaNueva),
+                    writeln(ListaNueva),searchAttribute(Tail,ListaEjemplos).
 replaceP(_, _, [], []).
 replaceP(O, R, [O|T], [R|T2]) :- replaceP(O, R, T, T2).
 replaceP(O, R, [H|T], [H|T2]) :- dif(H,O), replaceP(O, R, T, T2).
-
-
+buscarTotalAtributosPorClasificacion([],Attr,Valor,Lista).
+buscarTotalAtributosPorClasificacion([Clasificacion|T],Attr,Lista):-findall(Value,member((_,Value,Clasificacion),Lista),ListaNueva),length(ListaNueva,Size),write("Atributo "),write(Attr),write(" Clasificacion: "),write(Clasificacion),write("Cantidad: "),writeln(Size),buscarTotalAtributosPorClasificacion(T,Attr,Valor,Lista).
+buscarParcialAtributosPorClasificacion([],ListaValores,Attr,Lista).
+buscarParcialAtributosPorClasificacion(ListaClasificacion,[],Attr,Lista).
 isEmpty(Str):-at_end_of_stream(Str).
 
 leer(InputFile) :- open(InputFile, read, Str), read_file(Str,Lines), close(Str),!.
