@@ -92,13 +92,13 @@ buscarTotal([],Lista,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 buscarTotal([Valor|T],Lista,ListaIntermedia,ListaFinal):-
                             findall(Valor,member((_,Valor,_),Lista),ListaNueva),
                             length(ListaNueva,Size),
-                            append([(todo,total,Valor,Size)],ListaIntermedia,ListaTotal),
+                            append([(total,Valor,Size)],ListaIntermedia,ListaTotal),
                             buscarTotal(T,Lista,ListaTotal,ListaFinal).
 buscarParcial(Clasificacion,[],Attr,Lista,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 buscarParcial(Clasificacion,[Valor|T],Attr,Lista,ListaIntermedia,ListaFinal):-
                             findall(Valor,member((Attr,Valor,Clasificacion),Lista),ListaEncontrada),
                             length(ListaEncontrada,Size),
-                            append([(Clasificacion,cantidad,Valor,Size)],ListaIntermedia,ListaIncompleta),
+                            append([(Clasificacion,Valor,Size)],ListaIntermedia,ListaIncompleta),
                             buscarParcial(Clasificacion,T,Attr,Lista,ListaIncompleta,ListaFinal).
 
 /*Utilidades*/
