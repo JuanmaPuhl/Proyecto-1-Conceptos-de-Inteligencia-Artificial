@@ -63,7 +63,7 @@ generarArbolDecisionShell(Default) :-
 
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,writeln(Default).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-verificarIgualesShell(ListaEjemplos).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General").
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),!.
 
 recuperarAtributosShell(ListaAtributos,ListaFinal):-recuperarAtributos(ListaAtributos,_,ListaFinal).
 recuperarAtributos([],ListaIntermedia,ListaFinal):- ListaFinal = ListaIntermedia.
@@ -72,7 +72,7 @@ recuperarAtributos([(Atributo,Valor)|T],ListaIntermedia,ListaFinal):- ListaAux=[
 /*
 Tengo que buscar en la lista de ejemplos, todos los que tengan el atributo actual
 */
-auxiliar(ListaAtributos,ListaEjemplos):-searchAttribute(ListaAtributos,ListaEjemplos,[],ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),!.
+auxiliar(ListaAtributos,ListaEjemplos,ListaFinal):-searchAttribute(ListaAtributos,ListaEjemplos,[],ListaFinal).
 searchAttribute([],ListaEjemplos,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 searchAttribute([Attr|Tail],ListaEjemplos,ListaIntermedia,ListaFinal):-findall((Attr,Valor,Calificacion),(member((ID,L,(_,Calificacion)),ListaEjemplos),member((Attr,Valor),L)),ListaNueva),
                     findall(Clasificacion,member((_,_,(_,Clasificacion)),ListaEjemplos),ListaClasificacion),
