@@ -72,40 +72,34 @@ recuperarAtributos([(Atributo,Valor)|T],ListaIntermedia,ListaFinal):- ListaAux=[
 /*
 Tengo que buscar en la lista de ejemplos, todos los que tengan el atributo actual
 */
-auxiliar(ListaAtributos,ListaEjemplos):-searchAttribute(ListaAtributos,ListaEjemplos).
-searchAttribute([],ListaEjemplos).
-searchAttribute([Attr|Tail],ListaEjemplos):-findall((Attr,Valor,Calificacion),(member((ID,L,(_,Calificacion)),ListaEjemplos),member((Attr,Valor),L)),ListaNueva),
+auxiliar(ListaAtributos,ListaEjemplos):-searchAttribute(ListaAtributos,ListaEjemplos,[],ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),!.
+searchAttribute([],ListaEjemplos,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
+searchAttribute([Attr|Tail],ListaEjemplos,ListaIntermedia,ListaFinal):-findall((Attr,Valor,Calificacion),(member((ID,L,(_,Calificacion)),ListaEjemplos),member((Attr,Valor),L)),ListaNueva),
                     findall(Clasificacion,member((_,_,(_,Clasificacion)),ListaEjemplos),ListaClasificacion),
                     sort(ListaClasificacion,ListaClasificacionSinRepetidos),
-                    write("Atributo: "),
-                    writeln(Attr),
-                    buscarTotalAtributosPorClasificacion(ListaClasificacionSinRepetidos,Attr,ListaNueva),searchAttribute(Tail,ListaEjemplos).
-buscarTotalAtributosPorClasificacion([],Attr,Lista).
-buscarTotalAtributosPorClasificacion([Clasificacion|T],Attr,Lista):-findall(Value,member((_,Value,_),Lista),ListaValores),
+                    append([(Attr,ListaCantidades)],ListaIntermedia,ListaTemplate),
+                    findall(Value,member((_,Value,_),ListaNueva),ListaValores),
+                    sort(ListaValores,ListaValoresSinRepetidos),
+                    buscarTotal(ListaValoresSinRepetidos,ListaNueva,[],ListaIncompleta),
+                    buscarTotalAtributosPorClasificacion(ListaClasificacionSinRepetidos,Attr,ListaNueva,ListaIncompleta,ListaCantidades),
+                    searchAttribute(Tail,ListaEjemplos,ListaTemplate,ListaFinal).
+buscarTotalAtributosPorClasificacion([],Attr,Lista,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
+buscarTotalAtributosPorClasificacion([Clasificacion|T],Attr,Lista,ListaIntermedia,ListaFinal):-findall(Value,member((_,Value,_),Lista),ListaValores),
                                                                     sort(ListaValores,ListaValoresSinRepetidos),
-                                                                    buscarTotal(ListaValoresSinRepetidos,Lista),
-                                                                    write("Clasificacion: "),
-                                                                    write(Clasificacion),
-                                                                    buscarParcial(Clasificacion,ListaValoresSinRepetidos,Attr,Lista),
-                                                                    buscarTotalAtributosPorClasificacion(T,Attr,Lista).
-buscarTotal([],Lista).
-buscarTotal([Valor|T],Lista):-
+                                                                    buscarParcial(Clasificacion,ListaValoresSinRepetidos,Attr,Lista,ListaIntermedia,ListaMedio),
+                                                                    buscarTotalAtributosPorClasificacion(T,Attr,Lista,ListaMedio,ListaFinal).
+buscarTotal([],Lista,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
+buscarTotal([Valor|T],Lista,ListaIntermedia,ListaFinal):-
                             findall(Valor,member((_,Valor,_),Lista),ListaNueva),
                             length(ListaNueva,Size),
-                            write("Valor: "),
-                            write(Valor),
-                            write(" Total: "),
-                            writeln(Size),
-                            buscarTotal(T,Lista).
-buscarParcial(Clasificacion,[],Attr,Lista).
-buscarParcial(Clasificacion,[Valor|T],Attr,Lista):-
+                            append([(todo,total,Valor,Size)],ListaIntermedia,ListaTotal),
+                            buscarTotal(T,Lista,ListaTotal,ListaFinal).
+buscarParcial(Clasificacion,[],Attr,Lista,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
+buscarParcial(Clasificacion,[Valor|T],Attr,Lista,ListaIntermedia,ListaFinal):-
                             findall(Valor,member((Attr,Valor,Clasificacion),Lista),ListaEncontrada),
                             length(ListaEncontrada,Size),
-                            write(" Valor: "),
-                            write(Valor),
-                            write(" Cantidad: "),
-                            writeln(Size),
-                            buscarParcial(Clasificacion,T,Attr,Lista).
+                            append([(Clasificacion,cantidad,Valor,Size)],ListaIntermedia,ListaIncompleta),
+                            buscarParcial(Clasificacion,T,Attr,Lista,ListaIncompleta,ListaFinal).
 
 /*Utilidades*/
 isEmpty(Str):-at_end_of_stream(Str).
