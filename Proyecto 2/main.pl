@@ -109,8 +109,10 @@ contarTotal(Lista,ToReturn):-contarTotalAux(Lista,[],ToReturn).
 contarTotalAux([(Valor,Calificacion,Cantidad)|T],ListaIntermedia,ToReturn).
 
 searchAttribute([],ListaEjemplos).
-searchAttribute([Attr|Tail],ListaEjemplos):-findall((Attr,Valor,Calificacion),member((ID,[(Attr,Valor)|T],(_,Calificacion)),ListaEjemplos),ListaNueva),writeln(ListaNueva),searchAttribute(T,ListaEjemplos).
-
+searchAttribute([Attr|Tail],[]).
+searchAttribute([Attr|Tail],ListaEjemplos):-findall((Attr,Valor,Calificacion),(member((ID,L,(_,Calificacion)),ListaEjemplos),member((Attr,Valor),L)),ListaNueva),writeln(ListaNueva),searchAttribute(Tail,ListaEjemplos).
+/*searchAttribute([Attr|Tail],[(Atributo,Valor)|T]):-findall((Attr,Valor,Calificacion),member((ID,T,(_,Calificacion)),ListaEjemplos),ListaNueva),writeln(ListaNueva),searchAttribute(Tail,ListaEjemplos).
+*/
 replaceP(_, _, [], []).
 replaceP(O, R, [O|T], [R|T2]) :- replaceP(O, R, T, T2).
 replaceP(O, R, [H|T], [H|T2]) :- dif(H,O), replaceP(O, R, T, T2).
