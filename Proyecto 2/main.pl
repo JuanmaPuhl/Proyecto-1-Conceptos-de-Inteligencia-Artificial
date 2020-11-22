@@ -62,7 +62,7 @@ generarArbolDecisionShell(Default) :-
                                     generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,writeln(Default).
 generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),writeln(Calificacion).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),!.
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],Resultado),writeln(Resultado),!.
 
 
 /*Estos metodos estan para recuperar la lista de atributos. Basicamente se recibe la lista de atributos y valores y se cicla hasta llegar al ultimo
@@ -139,8 +139,19 @@ Para cada atributo
 Veo cual de todos tiene la mayor diferencia
 Retorno el obtenido como el mejor
 */
-calcularMejorAtributo(ListaDatos,ListaAtributos,ListaClasificacion,Resultado).
-
+calcularMejorAtributo(ListaDatos,[Attr|T],ListaClasificacion,Resultado):-calcularAux(ListaDatos,Attr,ListaClasificacion,Resultado,[],ListaFinal),length(ListaFinal,Size),Size==1,nth0(0,ListaFinal,Resultado),writeln("El resultado ya esta").
+calcularAux(ListaDatos,Attr,[Clasificacion|T],Resultado,ListaIntermedia,ListaFinal):-Dif = 0,calcular2(ListaDatos,Attr,Clasificacion,Resultado,Dif,ListaIntermedia,ListaFinal).
+calcular2(ListaDatos,Attr,Clasificacion,Resultado,Dif,ListaIntermedia,ListaFinal):- writeln(Attr),findall((Valor),((member((Attr,ListaCantidades),ListaDatos),member((Clasificacion,Valor,Cant),ListaCantidades))),ListaNueva),
+/*En ListaNueva tengo todos los datos para la clasificacion*/
+sort(ListaNueva,ListaValoresSinRepetir),
+writeln(ListaValoresSinRepetir),
+calcular3(ListaDatos,Attr,Clasificacion,Resultado,Dif,ListaValoresSinRepetir,ListaIntermedia,ListaFinal).
+calcular3(ListaDatos,Attr,Clasificacion,Resultado,Dif,[],ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia,writeln("Estamos"),writeln(ListaFinal).
+calcular3(ListaDatos,Attr,Clasificacion,Resultado,Dif,[Valor|T],ListaIntermedia,ListaFinal):-findall(Cantidad,(member((Attr,ListaCantidades),ListaDatos),member((total,Valor,Cantidad),ListaCantidades)),ListaTotal),
+nth0(0,ListaTotal,Total),
+writeln(Total),findall((Cantidad),(member((Attr,ListaCantidades),ListaDatos),member((Clasificacion,Valor,Cantidad),ListaCantidades)),ListaNueva),writeln(ListaNueva),nth0(0,ListaNueva,Cantidad),Cantidad==Total, writeln("Son iguales"),
+append([Attr],ListaIntermedia,ListaAppend),writeln(ListaAppend),calcular3(ListaDatos,Attr,Clasificacion,Resultado,Dif,T,ListaAppend,ListaFinal).
+calcular3(ListaDatos,Attr,Clasificacion,Resultado,Dif,[Valor|T],ListaIntermedia,ListaFinal):-calcular3(ListaDatos,Attr,Clasificacion,Resultado,Dif,T,ListaIntermedia,ListaFinal).
 /*Utilidades*/
 isEmpty(Str):-at_end_of_stream(Str).
 leer(InputFile) :- open(InputFile, read, Str), read_file(Str,Lines), close(Str),!.
