@@ -143,13 +143,15 @@ Retorno el obtenido como el mejor
 
 
 calcularMejorAtributo(ListaDatos,[Attr|T],ListaClasificacion,ListaIntermedia,ListaFinal):-calcularAux1(ListaDatos,Attr,ListaClasificacion,ListaIntermedia,ListaFinal).
+calcularAux1(ListaDatos,Attr,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de las clasificaciones"),writeln(ListaIntermedia).
 calcularAux1(ListaDatos,Attr,[Clasificacion|T],ListaIntermedia,ListaFinal):-
     /*Tengo que obtener la lista de valores*/
     findall(Value,(member((Attr,ListaCantidades),ListaDatos),member((Clasificacion,Value,Cantidad),ListaCantidades)),ListaValores),
     sort(ListaValores,ListaValores2),
     writeln(ListaValores2),
     /*Ahora tengo que buscar para cada uno de los valores*/
-    calcularAux2(ListaDatos,Attr,Clasificacion,ListaValores2,ListaIntermedia,ListaFinal).
+    calcularAux2(ListaDatos,Attr,Clasificacion,ListaValores2,ListaIntermedia,ListaNueva),
+    calcularAux1(ListaDatos,Attr,T,ListaNueva,ListaFinal).
 
 calcularAux2(ListaDatos,Attr,Clasificacion,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de los valores"),writeln(ListaIntermedia).
 calcularAux2(ListaDatos,Attr,Clasificacion,[Valor|T],ListaIntermedia,ListaFinal):-
