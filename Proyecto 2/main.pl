@@ -106,6 +106,40 @@ buscarParcial(Clasificacion,[Valor|T],Attr,Lista,ListaIntermedia,ListaFinal):-
                             length(ListaEncontrada,Size),
                             append([(Clasificacion,Valor,Size)],ListaIntermedia,ListaIncompleta),
                             buscarParcial(Clasificacion,T,Attr,Lista,ListaIncompleta,ListaFinal).
+/*
+Para cada atributo 
+    Para cada valor
+        Para cada clasificacion
+            Si la cantidad guardada es igual al total de ese valor
+                agrego el atributo a una lista de candidatos
+            Sino 
+                [...]
+Si la lista de candidatos tiene un solo elemento, 
+    entonces es el mejor
+Sino
+    Debo calcular diferencias y evaluar el mejor
+    (---)
+*/
+
+/*(---)
+Creo una lista de diferencias por atributo
+Para cada atributo
+    Creo una lista de diferencias por valor
+    Para cada valor
+        Creo un valor diferencia entero = 0
+        Para cada clasificacion
+            si dif = 0
+                dif = cantidad
+            sino
+                dif -= cantidad
+            dif = abs(dif)
+    Para cada elemento en la lista de dif por valor
+        sumo sus elementos
+    El resultado lo guardo en la lista de diferencias por atributo
+Veo cual de todos tiene la mayor diferencia
+Retorno el obtenido como el mejor
+*/
+calcularMejorAtributo(ListaDatos,ListaAtributos,ListaClasificacion,Resultado).
 
 /*Utilidades*/
 isEmpty(Str):-at_end_of_stream(Str).
