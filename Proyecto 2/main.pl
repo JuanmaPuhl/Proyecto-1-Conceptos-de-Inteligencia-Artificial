@@ -60,9 +60,8 @@ generarArbolDecisionShell(Default) :-
                                     nl,
                                     writeln(ListaFinalAtributos),
                                     generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default).
-
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,writeln(Default).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-verificarIgualesShell(ListaEjemplos).
+generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),writeln(Calificacion).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),!.
 
 
@@ -86,14 +85,13 @@ searchAttribute([Attr|Tail],ListaEjemplos,ListaIntermedia,ListaFinal):-findall((
                     findall(Value,member((_,Value,_),ListaNueva),ListaValores),
                     sort(ListaValores,ListaValoresSinRepetidos),
                     buscarTotal(ListaValoresSinRepetidos,ListaNueva,[],ListaIncompleta),
-                    buscarTotalAtributosPorClasificacion(ListaClasificacionSinRepetidos,Attr,ListaNueva,ListaIncompleta,ListaCantidades),
+                    buscarTotalAtributosPorClasificacion(ListaClasificacionSinRepetidos,Attr,ListaNueva,ListaValoresSinRepetidos,ListaIncompleta,ListaCantidades),
                     searchAttribute(Tail,ListaEjemplos,ListaTemplate,ListaFinal).
 /*Busca para cada clasificacion, la cantidad de ejemplos que hayan por cada tipo de valor*/                
-buscarTotalAtributosPorClasificacion([],Attr,Lista,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
-buscarTotalAtributosPorClasificacion([Clasificacion|T],Attr,Lista,ListaIntermedia,ListaFinal):-findall(Value,member((_,Value,_),Lista),ListaValores),
-                                                                    sort(ListaValores,ListaValoresSinRepetidos),
-                                                                    buscarParcial(Clasificacion,ListaValoresSinRepetidos,Attr,Lista,ListaIntermedia,ListaMedio),
-                                                                    buscarTotalAtributosPorClasificacion(T,Attr,Lista,ListaMedio,ListaFinal).
+buscarTotalAtributosPorClasificacion([],Attr,Lista,ListaValores,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
+buscarTotalAtributosPorClasificacion([Clasificacion|T],Attr,Lista,ListaValores,ListaIntermedia,ListaFinal):-
+                                                                    buscarParcial(Clasificacion,ListaValores,Attr,Lista,ListaIntermedia,ListaMedio),
+                                                                    buscarTotalAtributosPorClasificacion(T,Attr,Lista,ListaValores,ListaMedio,ListaFinal).
 /*Busca para cada valor, la cantidad total de ejemplos*/
 buscarTotal([],Lista,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 buscarTotal([Valor|T],Lista,ListaIntermedia,ListaFinal):-
