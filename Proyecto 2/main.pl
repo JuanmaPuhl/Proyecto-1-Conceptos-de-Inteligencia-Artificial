@@ -39,7 +39,7 @@ obtenerValoresDeAtributos([Attr|T],ListaEjemplos,ListaIntermedia,ListaFinal):-
                                 sort(ListaValores,ListaSinRepetir),
                                 append([(Attr,ListaSinRepetir)],ListaIntermedia,ListaNueva),
                                 obtenerValoresDeAtributos(T,ListaEjemplos,ListaNueva,ListaFinal).
-generarArbolDecisionShell(Default) :- 
+generarArbolDecisionShell(Default) :-
                                     findall((ID,Atributos,Clasificacion),ejemplo(ID,Atributos,Clasificacion),ListaEjemplos),
                                     findall(Atributos,ejemplo(1,Atributos,_),ListaAtributos),
                                     nth0(0,ListaAtributos,Lista),
@@ -48,6 +48,7 @@ generarArbolDecisionShell(Default) :-
                                     obtenerValoresDeAtributos(ListaFinalAtributos,ListaEjemplos,[],ListaValoresAtributos),
                                     generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default,ListaValoresAtributos,0,0).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue):-length(ListaEjemplos,Size),Size==0,escribirDOT(Default,Father,FatherValue).
+generarArbolDecision(ListaEjemplos,[],Default,ListaValores,Father,FatherValue):-calcularDefault(ListaEjemplos,Resultado),escribirDOT(Resultado,Father,FatherValue).
 generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default,ListaValores,Father,FatherValue):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),escribirDOT(Calificacion,Father,FatherValue).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue):-
                                                 auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),
