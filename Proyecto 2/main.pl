@@ -62,8 +62,6 @@ generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-
                                                 Size>0,
                                                 Q is Size-1,
                                                 nth0(Q,ListaSumas,(Cant,Best)),
-                                                write("BEST: "),
-                                                writeln(Best),
                                                 writeln(ListaValores),
                                                 seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos),
                                                 !.
@@ -79,6 +77,8 @@ seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos,ListaValoresCompleta
     writeln(ListaAtributosSinBest),
     nl,
     writeln(ListaNuevosEjemplos),
+    write("Elegido: "),
+    writeln(Best),
     write("Valor: "),
     writeln(Valor),
     calcularDefault(ListaNuevosEjemplos,Default),

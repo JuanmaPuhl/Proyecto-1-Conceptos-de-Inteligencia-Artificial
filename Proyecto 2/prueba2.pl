@@ -1,0 +1,12 @@
+ejemplo(1, [(alt, yes), (bar,no), (fri,no), (hun,yes), (pat,some),(price,high),(rain,no),(res,yes),(type,french),(est,0010)],(decision,inkjet)).
+ejemplo(2, [(alt, yes), (bar,no), (fri,no), (hun,yes), (pat,full),(price,low),(rain,no),(res,no),(type,thai),(est,3060)],(decision,laser)).
+ejemplo(3, [(alt, no), (bar,yes), (fri,no), (hun,no), (pat,some),(price,low),(rain,no),(res,no),(type,burguer),(est,0010)],(decision,inkjet)).
+ejemplo(4, [(alt, yes), (bar,no), (fri,yes), (hun,yes), (pat,full),(price,low),(rain,no),(res,no),(type,thai),(est,1030)],(decision,inkjet)).
+ejemplo(5, [(alt, yes), (bar,no), (fri,yes), (hun,no), (pat,full),(price,high),(rain,no),(res,yes),(type,french),(est,60)],(decision,laser)).
+ejemplo(6, [(alt, no), (bar,yes), (fri,no), (hun,yes), (pat,some),(price,medium),(rain,yes),(res,yes),(type,italian),(est,0010)],(decision,inkjet)).
+ejemplo(7, [(alt, no), (bar,yes), (fri,no), (hun,no), (pat,none),(price,low),(rain,yes),(res,no),(type,burguer),(est,0010)],(decision,laser)).
+ejemplo(8, [(alt, no), (bar,no), (fri,no), (hun,yes), (pat,some),(price,medium),(rain,yes),(res,yes),(type,thai),(est,0010)],(decision,inkjet)).
+ejemplo(9, [(alt, no), (bar,yes), (fri,yes), (hun,no), (pat,full),(price,low),(rain,yes),(res,no),(type,burguer),(est,60)],(decision,laser)).
+ejemplo(10, [(alt, yes), (bar,yes), (fri,yes), (hun,yes), (pat,full),(price,high),(rain,no),(res,yes),(type,italian),(est,1030)],(decision,laser)).
+ejemplo(11, [(alt, no), (bar,no), (fri,no), (hun,no), (pat,none),(price,low),(rain,no),(res,no),(type,thai),(est,0010)],(decision,laser)).
+ejemplo(12, [(alt, yes), (bar,yes), (fri,yes), (hun,yes), (pat,full),(price,low),(rain,no),(res,no),(type,burguer),(est,3060)],(decision,inkjet)).
