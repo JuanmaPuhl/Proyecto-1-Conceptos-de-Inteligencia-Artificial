@@ -46,10 +46,10 @@ generarArbolDecisionShell(Default) :-
                                     recuperarAtributosShell(Lista,ListaFinalAtributos),
                                     nl,
                                     obtenerValoresDeAtributos(ListaFinalAtributos,ListaEjemplos,[],ListaValoresAtributos),
-                                    generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default,ListaValoresAtributos).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-length(ListaEjemplos,Size),Size==0.
-generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default,ListaValores):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-
+                                    generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default,ListaValoresAtributos,0,0).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue):-length(ListaEjemplos,Size),Size==0,escribirDOT(Default,Father,FatherValue).
+generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default,ListaValores,Father,FatherValue):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),escribirDOT(Calificacion,Father,FatherValue).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue):-
                                                 auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),
                                                 calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),
                                                 sumarAtributos(ListaAtributos,ListaNueva,[],ListaSumas),
@@ -57,9 +57,15 @@ generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-
                                                 Size>0,
                                                 Q is Size-1,
                                                 nth0(Q,ListaSumas,(Cant,Best)),
-                                                write(Best),write(" [label="),write(Best),write("]\n"),
+                                                escribirDOT(Best,Father,FatherValue),
                                                 seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos),
                                                 !.
+escribirDOT(Best,Father,ValueFather):-
+                                    write(Best),write(" [label="),write(Best),write("]\n"),
+                                    Father\==0,
+                                    ValueFather\==0,
+                                    write(Father),write(" -> "),write(Best),write("[label = "),write(ValueFather),write("]\n").   
+escribirDOT(Best,Father,ValueFather).                                         
 seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos):-
     findall(Value,(member((Best,ListaValoresBest),ListaValores),member(Value,ListaValoresBest)),ListaValoresABuscar),
     seguirEjecucion(Best,ListaValoresABuscar,ListaEjemplos,ListaAtributos,ListaValores).
@@ -67,9 +73,8 @@ seguirEjecucion(Best,[],ListaEjemplos,ListaAtributos,ListaValoresCompleta).
 seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos,ListaValoresCompleta):-
     findall((Id,ListaAtributosEjemplos,Calificacion),(member((Id,ListaAtributosEjemplos,Calificacion),ListaEjemplos),member((Best,Valor),ListaAtributosEjemplos)),ListaNuevosEjemplos),
     delete(ListaAtributos,Best,ListaAtributosSinBest),
-
     calcularDefault(ListaNuevosEjemplos,Default),
-    generarArbolDecision(ListaNuevosEjemplos,ListaAtributosSinBest,Default,ListaValoresCompleta),
+    generarArbolDecision(ListaNuevosEjemplos,ListaAtributosSinBest,Default,ListaValoresCompleta,Best,Valor),
     seguirEjecucion(Best,T,ListaEjemplos,ListaAtributos,ListaValoresCompleta).
 seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos).
 sumarAtributos([],ListaObtenida,ListaIntermedia,ListaSuma):-sort(ListaIntermedia,ListaNueva),ListaSuma = ListaNueva.
