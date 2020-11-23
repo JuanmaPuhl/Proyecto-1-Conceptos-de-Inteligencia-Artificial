@@ -141,9 +141,9 @@ Veo cual de todos tiene la mayor diferencia
 Retorno el obtenido como el mejor
 */
 
-
-calcularMejorAtributo(ListaDatos,[Attr|T],ListaClasificacion,ListaIntermedia,ListaFinal):-calcularAux1(ListaDatos,Attr,ListaClasificacion,ListaIntermedia,ListaFinal).
-calcularAux1(ListaDatos,Attr,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de las clasificaciones"),writeln(ListaIntermedia),ListaFinal = ListaIntermedia.
+calcularMejorAtributo(ListaDatos,[],ListaClasificacion,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia, writeln(ListaFinal).
+calcularMejorAtributo(ListaDatos,[Attr|T],ListaClasificacion,ListaIntermedia,ListaFinal):-calcularAux1(ListaDatos,Attr,ListaClasificacion,ListaIntermedia,ListaNueva),calcularMejorAtributo(ListaDatos,T,ListaClasificacion,ListaNueva,ListaFinal).
+calcularAux1(ListaDatos,Attr,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de las clasificaciones"),ListaFinal = ListaIntermedia.
 calcularAux1(ListaDatos,Attr,[Clasificacion|T],ListaIntermedia,ListaFinal):-
     /*Tengo que obtener la lista de valores*/
     findall(Value,(member((Attr,ListaCantidades),ListaDatos),member((Clasificacion,Value,Cantidad),ListaCantidades)),ListaValores),
@@ -151,10 +151,9 @@ calcularAux1(ListaDatos,Attr,[Clasificacion|T],ListaIntermedia,ListaFinal):-
     writeln(ListaValores2),
     /*Ahora tengo que buscar para cada uno de los valores*/
     calcularAux2(ListaDatos,Attr,Clasificacion,ListaValores2,ListaIntermedia,ListaNueva),
-    calcularAux1(ListaDatos,Attr,T,ListaNueva,ListaFinal),
-    writeln(ListaNueva).
+    calcularAux1(ListaDatos,Attr,T,ListaNueva,ListaFinal).
 
-calcularAux2(ListaDatos,Attr,Clasificacion,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de los valores"),writeln(ListaIntermedia),ListaFinal = ListaIntermedia.
+calcularAux2(ListaDatos,Attr,Clasificacion,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de los valores"),ListaFinal = ListaIntermedia.
 calcularAux2(ListaDatos,Attr,Clasificacion,[Valor|T],ListaIntermedia,ListaFinal):-
     /*Tengo que obtener el total para ese valor*/
     findall(Cantidad,(member((Attr,ListaCantidades),ListaDatos),member((total,Valor,Cantidad),ListaCantidades)),ListaTotal),
@@ -165,7 +164,6 @@ calcularAux2(ListaDatos,Attr,Clasificacion,[Valor|T],ListaIntermedia,ListaFinal)
     nth0(0,ListaCantidad,Cantidad),
     writeln(Cantidad),
     procesar(Attr,Total,Cantidad,ListaIntermedia,ListaNueva),
-    writeln(ListaNueva),
     calcularAux2(ListaDatos,Attr,Clasificacion,T,ListaNueva,ListaFinal).
 procesar(Attr,Total,Cantidad,ListaIntermedia,ListaFinal):-Total == Cantidad, append([Attr],ListaIntermedia,ListaFinal),writeln("Entre aca").
 procesar(Attr,Total,Cantidad,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
