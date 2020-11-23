@@ -140,8 +140,8 @@ Para cada atributo
 Veo cual de todos tiene la mayor diferencia
 Retorno el obtenido como el mejor
 */
-
-calcularMejorAtributo(ListaDatos,[],ListaClasificacion,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia, writeln(ListaFinal).
+/*Al final me guarda el que mejor clasifica*/
+calcularMejorAtributo(ListaDatos,[],ListaClasificacion,ListaIntermedia,ListaFinal):-writeln("Llegue al final de los atributos"),sort(ListaIntermedia,ListaNueva),ListaFinal = ListaNueva, writeln(ListaFinal).
 calcularMejorAtributo(ListaDatos,[Attr|T],ListaClasificacion,ListaIntermedia,ListaFinal):-calcularAux1(ListaDatos,Attr,ListaClasificacion,ListaIntermedia,ListaNueva),calcularMejorAtributo(ListaDatos,T,ListaClasificacion,ListaNueva,ListaFinal).
 calcularAux1(ListaDatos,Attr,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de las clasificaciones"),ListaFinal = ListaIntermedia.
 calcularAux1(ListaDatos,Attr,[Clasificacion|T],ListaIntermedia,ListaFinal):-
@@ -156,16 +156,22 @@ calcularAux1(ListaDatos,Attr,[Clasificacion|T],ListaIntermedia,ListaFinal):-
 calcularAux2(ListaDatos,Attr,Clasificacion,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de los valores"),ListaFinal = ListaIntermedia.
 calcularAux2(ListaDatos,Attr,Clasificacion,[Valor|T],ListaIntermedia,ListaFinal):-
     /*Tengo que obtener el total para ese valor*/
+    write("Clasificacion: "),
+    writeln(Clasificacion),
+    write("Valor: "),
+    writeln(Valor),
     findall(Cantidad,(member((Attr,ListaCantidades),ListaDatos),member((total,Valor,Cantidad),ListaCantidades)),ListaTotal),
     nth0(0,ListaTotal,Total),
+    write("Total: "),
     writeln(Total),
     /*Ahora tengo que obtener la cantidad*/
     findall(Cantidad,(member((Attr,ListaCantidades),ListaDatos),member((Clasificacion,Valor,Cantidad),ListaCantidades)),ListaCantidad),
     nth0(0,ListaCantidad,Cantidad),
+    write("Cantidad: "),
     writeln(Cantidad),
     procesar(Attr,Total,Cantidad,ListaIntermedia,ListaNueva),
     calcularAux2(ListaDatos,Attr,Clasificacion,T,ListaNueva,ListaFinal).
-procesar(Attr,Total,Cantidad,ListaIntermedia,ListaFinal):-Total == Cantidad, append([Attr],ListaIntermedia,ListaFinal),writeln("Entre aca").
+procesar(Attr,Total,Cantidad,ListaIntermedia,ListaFinal):-Total == Cantidad, append([(Cantidad,Attr)],ListaIntermedia,ListaFinal),writeln("Entre aca").
 procesar(Attr,Total,Cantidad,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 /*Utilidades*/
 isEmpty(Str):-at_end_of_stream(Str).
