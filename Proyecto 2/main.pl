@@ -43,10 +43,12 @@ generarArbolDecisionShell(Default) :-
                                     recuperarAtributosShell(Lista,ListaFinalAtributos),
                                     nl,
                                     writeln(ListaFinalAtributos),
-                                    generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,writeln(Default).
-generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),writeln(Calificacion).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-
+                                    obtenerValoresDeAtributos(ListaFinalAtributos,ListaEjemplos,[],ListaValoresAtributos),
+                                    writeln(ListaValoresAtributos),
+                                    generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default,ListaValoresAtributos).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-length(ListaEjemplos,Size),Size==0,writeln(Default).
+generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default,ListaValores):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),writeln(Calificacion).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-
                                                 writeln("Caso General"),
                                                 auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),
                                                 write("\n\n\nResultado:\n"),
@@ -54,8 +56,20 @@ generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-
                                                 calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),
                                                 sumarAtributos(ListaAtributos,ListaNueva,[],ListaSumas),
                                                 length(ListaSumas,Size),
-                                                nth1(Size,ListaSumas,Best),
-                                                writeln(Best),!.
+                                                Q is Size-1,
+                                                nth0(Q,ListaSumas,(Cant,Best)),
+                                                write("BEST: "),
+                                                writeln(Best),
+                                                findall(Value,(member((Best,ListaValoresBest),ListaValores),member(Value,ListaValoresBest)),ListaValoresARevisar),
+                                                writeln(ListaValoresARevisar),
+                                                seguirEjecucion(Best,ListaValoresARevisar,ListaEjemplos,ListaAtributos),
+                                                !.
+
+seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos):-
+    writeln(Valor),
+    findall((Id,ListaAtributosEjemplos,Calificacion),(member((Id,ListaAtributosEjemplos,Calificacion),ListaEjemplos),member((Best,Valor),ListaAtributosEjemplos)),ListaNuevosEjemplos),
+    writeln("Listo"),
+    writeln(ListaNuevosEjemplos).
 sumarAtributos([],ListaObtenida,ListaIntermedia,ListaSuma):-sort(ListaIntermedia,ListaNueva),ListaSuma = ListaNueva,writeln(ListaSuma).
 sumarAtributos([Attr|T],ListaObtenida,ListaIntermedia,ListaSuma):-
     /*Hallar las cantidades de los pares cuyos atributo es el que estoy mirando*/
