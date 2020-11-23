@@ -7,7 +7,8 @@ construirAD(InputFile,OutputFile):-
                                     S>0,
                                     sort(L,ListaFinal), 
                                     length(ListaFinal,Size), 
-                                    buscarDefault(ListaFinal,Default),!.
+                                    open(OutputFile,write,Output),
+                                    buscarDefault(ListaFinal,Default,Output),!.
 construirAD(InputFile,OutputFile):- write("Ocurrio un error.").
 checkEmpty(File):-open(File,read,Str),isEmpty(Str).
 /*
@@ -16,7 +17,7 @@ Debo recorrer la lista final, llamando a findall contando todos los ids que apar
 Para cada uno entonces debo guardar en una lista el par (Nombre,Cantidad) y una vez que termino entonces recorro y veo el mayor.
 Sort creo que los ordena.
 */
-buscarDefault(ListaInput, Default):-buscarApariciones(ListaInput,ListaOutput),buscarMayor(ListaOutput,Default),write(Default),generarArbolDecisionShell(Default).
+buscarDefault(ListaInput, Default,Output):-buscarApariciones(ListaInput,ListaOutput),buscarMayor(ListaOutput,Default),write(Default),generarArbolDecisionShell(Default,Output).
 buscarApariciones(ListaInput,ListaOutput):-buscarAparicionesAux(ListaInput,[],ListaOutput).
 buscarAparicionesAux([],ListaIntermedia,ListaOutput):-append(ListaNueva,ListaIntermedia,ListaOutput),!.
 buscarAparicionesAux([H|T],ListaIntermedia,ListaOutput) :-
@@ -39,18 +40,20 @@ obtenerValoresDeAtributos([Attr|T],ListaEjemplos,ListaIntermedia,ListaFinal):-
                                 sort(ListaValores,ListaSinRepetir),
                                 append([(Attr,ListaSinRepetir)],ListaIntermedia,ListaNueva),
                                 obtenerValoresDeAtributos(T,ListaEjemplos,ListaNueva,ListaFinal).
-generarArbolDecisionShell(Default) :-
+generarArbolDecisionShell(Default,Output) :-
                                     findall((ID,Atributos,Clasificacion),ejemplo(ID,Atributos,Clasificacion),ListaEjemplos),
                                     findall(Atributos,ejemplo(1,Atributos,_),ListaAtributos),
                                     nth0(0,ListaAtributos,Lista),
                                     recuperarAtributosShell(Lista,ListaFinalAtributos),
                                     nl,
                                     obtenerValoresDeAtributos(ListaFinalAtributos,ListaEjemplos,[],ListaValoresAtributos),
-                                    generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default,ListaValoresAtributos,0,0,[],Lista2).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2):-length(ListaEjemplos,Size),Size==0,escribirDOT(Default,Father,FatherValue,Listalabels,Lista2).
-generarArbolDecision(ListaEjemplos,[],Default,ListaValores,Father,FatherValue,ListaLabels,Lista2):-calcularDefault(ListaEjemplos,Resultado),escribirDOT(Resultado,Father,FatherValue,ListaLabels,Lista2).
-generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2):-verificarIgualesShell([(ID,Atributos,(_,Calificacion))|T]),escribirDOT(Calificacion,Father,FatherValue,ListaLabels,Lista2).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2):-
+                                    writeln("node [shape = box]\n"),
+                                    write(Output,"node [shape = box]\n"),
+                                    generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default,ListaValoresAtributos,0,0,[],Lista2,Output),close(Output).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-length(ListaEjemplos,Size),Size==0,escribirDOT(Default,Father,FatherValue,Listalabels,Lista2,Output).
+generarArbolDecision(ListaEjemplos,[],Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-calcularDefault(ListaEjemplos,Resultado),escribirDOT(Resultado,Father,FatherValue,ListaLabels,Lista2,Output).
+generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-verificarIgualesShell([(ID,Atributos,(_,Calificacion))|T]),escribirDOT(Calificacion,Father,FatherValue,ListaLabels,Lista2,Output).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-
                                                 auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),
                                                 calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),
                                                 sumarAtributos(ListaAtributos,ListaNueva,[],ListaSumas),
@@ -58,32 +61,34 @@ generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,Fa
                                                 Size>0,
                                                 Q is Size-1,
                                                 nth0(Q,ListaSumas,(Cant,Best)),
-                                                escribirDOT(Best,Father,FatherValue,ListaLabels,ListaLoca),
-                                                seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos,ListaLoca,ListaNuevisima),
+                                                escribirDOT(Best,Father,FatherValue,ListaLabels,ListaLoca,Output),
+                                                seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos,ListaLoca,ListaNuevisima,Output),
                                                 Lista2 = ListaNuevisima,
                                                 !.
-escribirDOT(Best,Father,ValueFather,ListaLabels,ListaLoca):-
+escribirDOT(Best,Father,ValueFather,ListaLabels,ListaLoca,Output):-
                                     append([Best],ListaLabels,ListaNueva),
                                     findall(a,member(Best,ListaNueva),ListaApariciones),
                                     length(ListaApariciones,CantidadApariciones),
                                     write(Best),write(CantidadApariciones),write(" [label="),write(Best),write("]\n"),
+                                    write(Output,Best),write(Output,CantidadApariciones),write(Output," [label="),write(Output,Best),write(Output,"]\n"),
                                     Father\==0,
                                     ValueFather\==0,
                                     findall(b,member(Father,ListaLabels),ListaAparicionesFather),
                                     length(ListaAparicionesFather,CantidadAparicionesFather),
                                     ListaLoca = ListaNueva,
-                                    write(Father),write(CantidadAparicionesFather),write(" -> "),write(Best),write(CantidadApariciones),write("[label = "),write(ValueFather),write("]\n").   
-escribirDOT(Best,Father,ValueFather,ListaLabels,ListaLoca):-append([Best],ListaLabels,ListaNueva),ListaLoca = ListaNueva.                                         
-seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos,ListaLabels,ListaFinal):-
+                                    write(Father),write(CantidadAparicionesFather),write(" -> "),write(Best),write(CantidadApariciones),write("[label = "),write(ValueFather),write("]\n"),
+                                    write(Output,Father),write(Output,CantidadAparicionesFather),write(Output," -> "),write(Output,Best),write(Output,CantidadApariciones),write(Output,"[label = "),write(Output,ValueFather),write(Output,"]\n").   
+escribirDOT(Best,Father,ValueFather,ListaLabels,ListaLoca,Output):-append([Best],ListaLabels,ListaNueva),ListaLoca = ListaNueva.                                         
+seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos,ListaLabels,ListaFinal,Output):-
     findall(Value,(member((Best,ListaValoresBest),ListaValores),member(Value,ListaValoresBest)),ListaValoresABuscar),
-    seguirEjecucion(Best,ListaValoresABuscar,ListaEjemplos,ListaAtributos,ListaValores,ListaLabels,ListaFinal).
-seguirEjecucion(Best,[],ListaEjemplos,ListaAtributos,ListaValoresCompleta,ListaLabels,ListaFinal):-ListaFinal = ListaLabels.
-seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos,ListaValoresCompleta,ListaLabels,ListaFinal):-
+    seguirEjecucion(Best,ListaValoresABuscar,ListaEjemplos,ListaAtributos,ListaValores,ListaLabels,ListaFinal,Output).
+seguirEjecucion(Best,[],ListaEjemplos,ListaAtributos,ListaValoresCompleta,ListaLabels,ListaFinal,Output):-ListaFinal = ListaLabels.
+seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos,ListaValoresCompleta,ListaLabels,ListaFinal,Output):-
     findall((Id,ListaAtributosEjemplos,Calificacion),(member((Id,ListaAtributosEjemplos,Calificacion),ListaEjemplos),member((Best,Valor),ListaAtributosEjemplos)),ListaNuevosEjemplos),
     delete(ListaAtributos,Best,ListaAtributosSinBest),
     calcularDefault(ListaNuevosEjemplos,Default),
-    generarArbolDecision(ListaNuevosEjemplos,ListaAtributosSinBest,Default,ListaValoresCompleta,Best,Valor,ListaLabels,Lista2),
-    seguirEjecucion(Best,T,ListaEjemplos,ListaAtributos,ListaValoresCompleta,Lista2,ListaFinal).
+    generarArbolDecision(ListaNuevosEjemplos,ListaAtributosSinBest,Default,ListaValoresCompleta,Best,Valor,ListaLabels,Lista2,Output),
+    seguirEjecucion(Best,T,ListaEjemplos,ListaAtributos,ListaValoresCompleta,Lista2,ListaFinal,Output).
 seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos,ListaValoresCompleta,ListaLabels).
 sumarAtributos([],ListaObtenida,ListaIntermedia,ListaSuma):-sort(ListaIntermedia,ListaNueva),ListaSuma = ListaNueva.
 sumarAtributos([Attr|T],ListaObtenida,ListaIntermedia,ListaSuma):-
