@@ -62,9 +62,19 @@ generarArbolDecisionShell(Default) :-
                                     generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,writeln(Default).
 generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),writeln(Calificacion).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),!.
-
-
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),sumarAtributos(ListaAtributos,ListaNueva,[],ListaSumas),!.
+sumarAtributos([],ListaObtenida,ListaIntermedia,ListaSuma):-sort(ListaIntermedia,ListaNueva),ListaSuma = ListaNueva,writeln(ListaSuma).
+sumarAtributos([Attr|T],ListaObtenida,ListaIntermedia,ListaSuma):-
+    /*Hallar las cantidades de los pares cuyos atributo es el que estoy mirando*/
+    findall(Cantidad,member((Cantidad,Attr),ListaObtenida),ListaNueva),
+    writeln(ListaNueva),
+    sumar(Attr,ListaNueva,0,ListaIntermedia,ListaNuevita),
+    sumarAtributos(T,ListaObtenida,ListaNuevita,ListaSuma).
+sumar(Attr,[],Suma,ListaIntermedia,ListaNueva):-
+    append([(Suma,Attr)],ListaIntermedia,ListaNueva).
+sumar(Attr,[Cantidad|T],Suma,ListaIntermedia,ListaNueva):-
+    Q is Suma+Cantidad,
+    sumar(Attr,T,Q,ListaIntermedia,ListaNueva).
 /*Estos metodos estan para recuperar la lista de atributos. Basicamente se recibe la lista de atributos y valores y se cicla hasta llegar al ultimo
 guardando mientras en una lista de retorno todos los atributos encontrados*/
 recuperarAtributosShell(ListaAtributos,ListaFinal):-recuperarAtributos(ListaAtributos,_,ListaFinal).
