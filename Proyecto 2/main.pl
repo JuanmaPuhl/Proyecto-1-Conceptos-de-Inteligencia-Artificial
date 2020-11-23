@@ -58,12 +58,12 @@ generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,Fa
                                                 Size>0,
                                                 Q is Size-1,
                                                 nth0(Q,ListaSumas,(Cant,Best)),
-                                                escribirDOT(Best,Father,FatherValue,ListaLabels,Lista2),
-                                                seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos,Lista2),
+                                                escribirDOT(Best,Father,FatherValue,ListaLabels,ListaLoca),
+                                                seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos,ListaLoca,ListaNuevisima),
+                                                Lista2 = ListaNuevisima,
                                                 !.
 escribirDOT(Best,Father,ValueFather,ListaLabels,ListaLoca):-
                                     append([Best],ListaLabels,ListaNueva),
-                                    writeln(ListaNueva),
                                     findall(a,member(Best,ListaNueva),ListaApariciones),
                                     length(ListaApariciones,CantidadApariciones),
                                     write(Best),write(CantidadApariciones),write(" [label="),write(Best),write("]\n"),
@@ -74,16 +74,16 @@ escribirDOT(Best,Father,ValueFather,ListaLabels,ListaLoca):-
                                     ListaLoca = ListaNueva,
                                     write(Father),write(CantidadAparicionesFather),write(" -> "),write(Best),write(CantidadApariciones),write("[label = "),write(ValueFather),write("]\n").   
 escribirDOT(Best,Father,ValueFather,ListaLabels,ListaLoca):-append([Best],ListaLabels,ListaNueva),ListaLoca = ListaNueva.                                         
-seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos,ListaLabels):-
+seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos,ListaLabels,ListaFinal):-
     findall(Value,(member((Best,ListaValoresBest),ListaValores),member(Value,ListaValoresBest)),ListaValoresABuscar),
-    seguirEjecucion(Best,ListaValoresABuscar,ListaEjemplos,ListaAtributos,ListaValores,ListaLabels).
-seguirEjecucion(Best,[],ListaEjemplos,ListaAtributos,ListaValoresCompleta,ListaLabels).
-seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos,ListaValoresCompleta,ListaLabels):-
+    seguirEjecucion(Best,ListaValoresABuscar,ListaEjemplos,ListaAtributos,ListaValores,ListaLabels,ListaFinal).
+seguirEjecucion(Best,[],ListaEjemplos,ListaAtributos,ListaValoresCompleta,ListaLabels,ListaFinal):-ListaFinal = ListaLabels.
+seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos,ListaValoresCompleta,ListaLabels,ListaFinal):-
     findall((Id,ListaAtributosEjemplos,Calificacion),(member((Id,ListaAtributosEjemplos,Calificacion),ListaEjemplos),member((Best,Valor),ListaAtributosEjemplos)),ListaNuevosEjemplos),
     delete(ListaAtributos,Best,ListaAtributosSinBest),
     calcularDefault(ListaNuevosEjemplos,Default),
     generarArbolDecision(ListaNuevosEjemplos,ListaAtributosSinBest,Default,ListaValoresCompleta,Best,Valor,ListaLabels,Lista2),
-    seguirEjecucion(Best,T,ListaEjemplos,ListaAtributos,ListaValoresCompleta,Lista2).
+    seguirEjecucion(Best,T,ListaEjemplos,ListaAtributos,ListaValoresCompleta,Lista2,ListaFinal).
 seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos,ListaValoresCompleta,ListaLabels).
 sumarAtributos([],ListaObtenida,ListaIntermedia,ListaSuma):-sort(ListaIntermedia,ListaNueva),ListaSuma = ListaNueva.
 sumarAtributos([Attr|T],ListaObtenida,ListaIntermedia,ListaSuma):-
