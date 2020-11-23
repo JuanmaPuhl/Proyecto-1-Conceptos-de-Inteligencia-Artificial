@@ -24,6 +24,9 @@ buscarAparicionesAux([H|T],ListaIntermedia,ListaOutput) :-
                                                         length(ListaAux,Cantidad),ListaNueva=[(Cantidad,H)],
                                                         append(ListaIntermedia,ListaNueva,ListaNueva2),
                                                         buscarAparicionesAux(T,ListaNueva2,ListaOutput).
+
+calcularDefault(ListaEjemplos,Default):-buscarApariciones(ListaEjemplos,ListaOutput),buscarMayor(ListaOutput,Default).
+
 /*
 En la lista final tengo todo ordenado, sin repeticiones, y el primero es el que mas apariciones tiene
 */
@@ -42,12 +45,10 @@ generarArbolDecisionShell(Default) :-
                                     nth0(0,ListaAtributos,Lista),
                                     recuperarAtributosShell(Lista,ListaFinalAtributos),
                                     nl,
-                                    writeln(ListaFinalAtributos),
                                     obtenerValoresDeAtributos(ListaFinalAtributos,ListaEjemplos,[],ListaValoresAtributos),
-                                    writeln(ListaValoresAtributos),
                                     generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default,ListaValoresAtributos).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-length(ListaEjemplos,Size),Size==0,writeln(Default).
-generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default,ListaValores):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),writeln(Calificacion).
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-length(ListaEjemplos,Size),Size==0,write("Resultado: "),writeln(Default).
+generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default,ListaValores):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),write("Resultado: "),writeln(Calificacion).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-
                                                 writeln("Caso General"),
                                                 auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),
@@ -56,25 +57,35 @@ generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-
                                                 calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),
                                                 sumarAtributos(ListaAtributos,ListaNueva,[],ListaSumas),
                                                 length(ListaSumas,Size),
+                                                writeln(ListaSumas),
+                                                writeln(Size),
+                                                Size>0,
                                                 Q is Size-1,
                                                 nth0(Q,ListaSumas,(Cant,Best)),
                                                 write("BEST: "),
                                                 writeln(Best),
-                                                findall(Value,(member((Best,ListaValoresBest),ListaValores),member(Value,ListaValoresBest)),ListaValoresARevisar),
-                                                writeln(ListaValoresARevisar),
-                                                seguirEjecucion(Best,ListaValoresARevisar,ListaEjemplos,ListaAtributos),
+                                                writeln(ListaValores),
+                                                
+                                                seguirEjecucion(Best,ListaValores,ListaEjemplos,ListaAtributos),
                                                 !.
-
-seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos):-
-    writeln(Valor),
+seguirEjecucion(Best,[],ListaEjemplos,ListaAtributos).
+seguirEjecucion(Best,ListaValores,ListaEjemplos,ListaAtributos):-
+    findall(Value,(member((Best,ListaValoresBest),ListaValores),member(Value,ListaValoresBest)),[Valor|T]),
     findall((Id,ListaAtributosEjemplos,Calificacion),(member((Id,ListaAtributosEjemplos,Calificacion),ListaEjemplos),member((Best,Valor),ListaAtributosEjemplos)),ListaNuevosEjemplos),
-    writeln("Listo"),
-    writeln(ListaNuevosEjemplos).
+    delete(ListaAtributos,Best,ListaAtributosSinBest),
+    nl,
+    writeln(ListaAtributosSinBest),
+    nl,
+    writeln(ListaNuevosEjemplos),
+    write("Valor: "),
+    writeln(Valor),
+    calcularDefault(ListaNuevosEjemplos,Default),
+    generarArbolDecision(ListaNuevosEjemplos,ListaAtributosSinBest,Default,ListaValores).
+seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos).
 sumarAtributos([],ListaObtenida,ListaIntermedia,ListaSuma):-sort(ListaIntermedia,ListaNueva),ListaSuma = ListaNueva,writeln(ListaSuma).
 sumarAtributos([Attr|T],ListaObtenida,ListaIntermedia,ListaSuma):-
     /*Hallar las cantidades de los pares cuyos atributo es el que estoy mirando*/
     findall(Cantidad,member((Cantidad,Attr),ListaObtenida),ListaNueva),
-    writeln(ListaNueva),
     sumar(Attr,ListaNueva,0,ListaIntermedia,ListaNuevita),
     sumarAtributos(T,ListaObtenida,ListaNuevita,ListaSuma).
 sumar(Attr,[],Suma,ListaIntermedia,ListaNueva):-
@@ -127,42 +138,31 @@ buscarParcial(Clasificacion,[Valor|T],Attr,Lista,ListaIntermedia,ListaFinal):-
 
 /*Al final me guarda el que mejor clasifica*/
 calcularMejorAtributo(ListaDatos,[],ListaClasificacion,ListaIntermedia,ListaFinal):-
-                                                    writeln("Llegue al final de los atributos"),
                                                     sort(ListaIntermedia,ListaNueva),
-                                                    ListaFinal = ListaNueva, 
-                                                    writeln(ListaFinal).
+                                                    ListaFinal = ListaNueva.
 calcularMejorAtributo(ListaDatos,[Attr|T],ListaClasificacion,ListaIntermedia,ListaFinal):-
                                                     calcularAux1(ListaDatos,Attr,ListaClasificacion,ListaIntermedia,ListaNueva),
                                                     calcularMejorAtributo(ListaDatos,T,ListaClasificacion,ListaNueva,ListaFinal).
-calcularAux1(ListaDatos,Attr,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de las clasificaciones"),ListaFinal = ListaIntermedia.
+calcularAux1(ListaDatos,Attr,[],ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 calcularAux1(ListaDatos,Attr,[Clasificacion|T],ListaIntermedia,ListaFinal):-
     /*Tengo que obtener la lista de valores*/
     findall(Value,(member((Attr,ListaCantidades),ListaDatos),member((Clasificacion,Value,Cantidad),ListaCantidades)),ListaValores),
     sort(ListaValores,ListaValores2),
-    writeln(ListaValores2),
     /*Ahora tengo que buscar para cada uno de los valores*/
     calcularAux2(ListaDatos,Attr,Clasificacion,ListaValores2,ListaIntermedia,ListaNueva),
     calcularAux1(ListaDatos,Attr,T,ListaNueva,ListaFinal).
 
-calcularAux2(ListaDatos,Attr,Clasificacion,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de los valores"),ListaFinal = ListaIntermedia.
+calcularAux2(ListaDatos,Attr,Clasificacion,[],ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 calcularAux2(ListaDatos,Attr,Clasificacion,[Valor|T],ListaIntermedia,ListaFinal):-
     /*Tengo que obtener el total para ese valor*/
-    write("Clasificacion: "),
-    writeln(Clasificacion),
-    write("Valor: "),
-    writeln(Valor),
     findall(Cantidad,(member((Attr,ListaCantidades),ListaDatos),member((total,Valor,Cantidad),ListaCantidades)),ListaTotal),
     nth0(0,ListaTotal,Total),
-    write("Total: "),
-    writeln(Total),
     /*Ahora tengo que obtener la cantidad*/
     findall(Cantidad,(member((Attr,ListaCantidades),ListaDatos),member((Clasificacion,Valor,Cantidad),ListaCantidades)),ListaCantidad),
     nth0(0,ListaCantidad,Cantidad),
-    write("Cantidad: "),
-    writeln(Cantidad),
     procesar(Attr,Total,Cantidad,ListaIntermedia,ListaNueva),
     calcularAux2(ListaDatos,Attr,Clasificacion,T,ListaNueva,ListaFinal).
-procesar(Attr,Total,Cantidad,ListaIntermedia,ListaFinal):-Total == Cantidad, append([(Cantidad,Attr)],ListaIntermedia,ListaFinal),writeln("Entre aca").
+procesar(Attr,Total,Cantidad,ListaIntermedia,ListaFinal):-Total == Cantidad, append([(Cantidad,Attr)],ListaIntermedia,ListaFinal).
 procesar(Attr,Total,Cantidad,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 /*Utilidades*/
 isEmpty(Str):-at_end_of_stream(Str).
