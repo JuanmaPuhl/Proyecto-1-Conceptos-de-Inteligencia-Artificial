@@ -46,7 +46,16 @@ generarArbolDecisionShell(Default) :-
                                     generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,writeln(Default).
 generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),writeln(Calificacion).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),sumarAtributos(ListaAtributos,ListaNueva,[],ListaSumas),length(ListaSumas,Size),nth1(Size,ListaSumas,Best),writeln(Best),obtenerValores(Best,ListaEjemplos),!.
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-
+                                                writeln("Caso General"),
+                                                auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),
+                                                write("\n\n\nResultado:\n"),
+                                                writeln(ListaFinal),
+                                                calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),
+                                                sumarAtributos(ListaAtributos,ListaNueva,[],ListaSumas),
+                                                length(ListaSumas,Size),
+                                                nth1(Size,ListaSumas,Best),
+                                                writeln(Best),!.
 sumarAtributos([],ListaObtenida,ListaIntermedia,ListaSuma):-sort(ListaIntermedia,ListaNueva),ListaSuma = ListaNueva,writeln(ListaSuma).
 sumarAtributos([Attr|T],ListaObtenida,ListaIntermedia,ListaSuma):-
     /*Hallar las cantidades de los pares cuyos atributo es el que estoy mirando*/
@@ -103,8 +112,14 @@ buscarParcial(Clasificacion,[Valor|T],Attr,Lista,ListaIntermedia,ListaFinal):-
                             buscarParcial(Clasificacion,T,Attr,Lista,ListaIncompleta,ListaFinal).
 
 /*Al final me guarda el que mejor clasifica*/
-calcularMejorAtributo(ListaDatos,[],ListaClasificacion,ListaIntermedia,ListaFinal):-writeln("Llegue al final de los atributos"),sort(ListaIntermedia,ListaNueva),ListaFinal = ListaNueva, writeln(ListaFinal).
-calcularMejorAtributo(ListaDatos,[Attr|T],ListaClasificacion,ListaIntermedia,ListaFinal):-calcularAux1(ListaDatos,Attr,ListaClasificacion,ListaIntermedia,ListaNueva),calcularMejorAtributo(ListaDatos,T,ListaClasificacion,ListaNueva,ListaFinal).
+calcularMejorAtributo(ListaDatos,[],ListaClasificacion,ListaIntermedia,ListaFinal):-
+                                                    writeln("Llegue al final de los atributos"),
+                                                    sort(ListaIntermedia,ListaNueva),
+                                                    ListaFinal = ListaNueva, 
+                                                    writeln(ListaFinal).
+calcularMejorAtributo(ListaDatos,[Attr|T],ListaClasificacion,ListaIntermedia,ListaFinal):-
+                                                    calcularAux1(ListaDatos,Attr,ListaClasificacion,ListaIntermedia,ListaNueva),
+                                                    calcularMejorAtributo(ListaDatos,T,ListaClasificacion,ListaNueva,ListaFinal).
 calcularAux1(ListaDatos,Attr,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de las clasificaciones"),ListaFinal = ListaIntermedia.
 calcularAux1(ListaDatos,Attr,[Clasificacion|T],ListaIntermedia,ListaFinal):-
     /*Tengo que obtener la lista de valores*/
