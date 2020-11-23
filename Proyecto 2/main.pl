@@ -16,7 +16,6 @@ Debo recorrer la lista final, llamando a findall contando todos los ids que apar
 Para cada uno entonces debo guardar en una lista el par (Nombre,Cantidad) y una vez que termino entonces recorro y veo el mayor.
 Sort creo que los ordena.
 */
-
 buscarDefault(ListaInput, Default):-buscarApariciones(ListaInput,ListaOutput),buscarMayor(ListaOutput,Default),write(Default),generarArbolDecisionShell(Default).
 buscarApariciones(ListaInput,ListaOutput):-buscarAparicionesAux(ListaInput,[],ListaOutput).
 buscarAparicionesAux([],ListaIntermedia,ListaOutput):-append(ListaNueva,ListaIntermedia,ListaOutput),!.
@@ -31,27 +30,12 @@ En la lista final tengo todo ordenado, sin repeticiones, y el primero es el que 
 buscarMayor(ListaOutput,Default):-sort(ListaOutput,ListaOrdenada),reverse(ListaOrdenada,ListaFinal),obtenerMayor(ListaFinal,Default).
 obtenerMayor([(A,(B,C))|T],Default):- Default = C.
 
-/*
-Ahora tengo que generar el arbol de decision
-ALGORITMO:
-
-    generarArbolDecision(ejemplos,atributos,default)
-        si ejemplos esta vacio
-            retornar default
-        sino
-            si todos los ejemplos tienen la misma clasificacion
-                retornar clasificacion
-            sino
-                best = elegirAtributo(atributos,ejemplos)
-                arbol = arbol con raiz best
-                para cada Vi de best hacer
-                    ejemplos = {elementos de examples con best = Vi}
-                    subArbol = generarArbolDecision(ejemplos,atributos-best,majority_values(ejemplosI))
-                    añadir una rama a arbol con etiqueta Vi y subarbol subArbol
-                fin
-        retornar arbol
-*/
-
+obtenerValoresDeAtributos([],ListaEjemplos,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
+obtenerValoresDeAtributos([Attr|T],ListaEjemplos,ListaIntermedia,ListaFinal):-
+                                findall(Value,(member((ID,ListaAtributos,Calificacion),ListaEjemplos),member((Attr,Value),ListaAtributos)),ListaValores),
+                                sort(ListaValores,ListaSinRepetir),
+                                append([(Attr,ListaSinRepetir)],ListaIntermedia,ListaNueva),
+                                obtenerValoresDeAtributos(T,ListaEjemplos,ListaNueva,ListaFinal).
 generarArbolDecisionShell(Default) :- 
                                     findall((ID,Atributos,Clasificacion),ejemplo(ID,Atributos,Clasificacion),ListaEjemplos),
                                     findall(Atributos,ejemplo(1,Atributos,_),ListaAtributos),
@@ -62,7 +46,7 @@ generarArbolDecisionShell(Default) :-
                                     generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,writeln(Default).
 generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),writeln(Calificacion).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),sumarAtributos(ListaAtributos,ListaNueva,[],ListaSumas),!.
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),sumarAtributos(ListaAtributos,ListaNueva,[],ListaSumas),length(ListaSumas,Size),nth1(Size,ListaSumas,Best),writeln(Best),obtenerValores(Best,ListaEjemplos),!.
 sumarAtributos([],ListaObtenida,ListaIntermedia,ListaSuma):-sort(ListaIntermedia,ListaNueva),ListaSuma = ListaNueva,writeln(ListaSuma).
 sumarAtributos([Attr|T],ListaObtenida,ListaIntermedia,ListaSuma):-
     /*Hallar las cantidades de los pares cuyos atributo es el que estoy mirando*/
@@ -117,39 +101,7 @@ buscarParcial(Clasificacion,[Valor|T],Attr,Lista,ListaIntermedia,ListaFinal):-
                             length(ListaEncontrada,Size),
                             append([(Clasificacion,Valor,Size)],ListaIntermedia,ListaIncompleta),
                             buscarParcial(Clasificacion,T,Attr,Lista,ListaIncompleta,ListaFinal).
-/*
-Para cada atributo 
-    Para cada valor
-        Para cada clasificacion
-            Si la cantidad guardada es igual al total de ese valor
-                agrego el atributo a una lista de candidatos
-            Sino 
-                [...]
-Si la lista de candidatos tiene un solo elemento, 
-    entonces es el mejor
-Sino
-    Debo calcular diferencias y evaluar el mejor
-    (---)
-*/
 
-/*(---)
-Creo una lista de diferencias por atributo
-Para cada atributo
-    Creo una lista de diferencias por valor
-    Para cada valor
-        Creo un valor diferencia entero = 0
-        Para cada clasificacion
-            si dif = 0
-                dif = cantidad
-            sino
-                dif -= cantidad
-            dif = abs(dif)
-    Para cada elemento en la lista de dif por valor
-        sumo sus elementos
-    El resultado lo guardo en la lista de diferencias por atributo
-Veo cual de todos tiene la mayor diferencia
-Retorno el obtenido como el mejor
-*/
 /*Al final me guarda el que mejor clasifica*/
 calcularMejorAtributo(ListaDatos,[],ListaClasificacion,ListaIntermedia,ListaFinal):-writeln("Llegue al final de los atributos"),sort(ListaIntermedia,ListaNueva),ListaFinal = ListaNueva, writeln(ListaFinal).
 calcularMejorAtributo(ListaDatos,[Attr|T],ListaClasificacion,ListaIntermedia,ListaFinal):-calcularAux1(ListaDatos,Attr,ListaClasificacion,ListaIntermedia,ListaNueva),calcularMejorAtributo(ListaDatos,T,ListaClasificacion,ListaNueva,ListaFinal).
