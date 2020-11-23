@@ -65,12 +65,14 @@ generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores):-
                                                 write("BEST: "),
                                                 writeln(Best),
                                                 writeln(ListaValores),
-                                                
-                                                seguirEjecucion(Best,ListaValores,ListaEjemplos,ListaAtributos),
+                                                seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos),
                                                 !.
-seguirEjecucion(Best,[],ListaEjemplos,ListaAtributos).
-seguirEjecucion(Best,ListaValores,ListaEjemplos,ListaAtributos):-
-    findall(Value,(member((Best,ListaValoresBest),ListaValores),member(Value,ListaValoresBest)),[Valor|T]),
+seguirEjecucionShell(Best,ListaValores,ListaEjemplos,ListaAtributos):-
+    findall(Value,(member((Best,ListaValoresBest),ListaValores),member(Value,ListaValoresBest)),ListaValoresABuscar),
+    writeln(ListaValoresABuscar),
+    seguirEjecucion(Best,ListaValoresABuscar,ListaEjemplos,ListaAtributos,ListaValores).
+seguirEjecucion(Best,[],ListaEjemplos,ListaAtributos,ListaValoresCompleta).
+seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos,ListaValoresCompleta):-
     findall((Id,ListaAtributosEjemplos,Calificacion),(member((Id,ListaAtributosEjemplos,Calificacion),ListaEjemplos),member((Best,Valor),ListaAtributosEjemplos)),ListaNuevosEjemplos),
     delete(ListaAtributos,Best,ListaAtributosSinBest),
     nl,
@@ -80,7 +82,8 @@ seguirEjecucion(Best,ListaValores,ListaEjemplos,ListaAtributos):-
     write("Valor: "),
     writeln(Valor),
     calcularDefault(ListaNuevosEjemplos,Default),
-    generarArbolDecision(ListaNuevosEjemplos,ListaAtributosSinBest,Default,ListaValores).
+    generarArbolDecision(ListaNuevosEjemplos,ListaAtributosSinBest,Default,ListaValoresCompleta),
+    seguirEjecucion(Best,T,ListaEjemplos,ListaAtributos,ListaValoresCompleta).
 seguirEjecucion(Best,[Valor|T],ListaEjemplos,ListaAtributos).
 sumarAtributos([],ListaObtenida,ListaIntermedia,ListaSuma):-sort(ListaIntermedia,ListaNueva),ListaSuma = ListaNueva,writeln(ListaSuma).
 sumarAtributos([Attr|T],ListaObtenida,ListaIntermedia,ListaSuma):-
