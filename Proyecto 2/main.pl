@@ -11,6 +11,11 @@ construirAD(InputFile,OutputFile):-
                                     buscarDefault(ListaFinal,Default,Output),!.
 construirAD(InputFile,OutputFile):- write("Ocurrio un error.").
 checkEmpty(File):-open(File,read,Str),isEmpty(Str).
+
+/*obtenerListaValoresAtributosTotal(Resultado):-findall(X,(ejemplo(_,ListaAtributos,_),member((Attr,X),ListaAtributos)),ListaValoresAtributosTotal).*/
+obtenerListaClasificacionesTotal(Resultado):-findall(X,ejemplo(_,_,(_,X)),ListaClasificacionesTotal),sort(ListaClasificacionesTotal,Resultado).
+
+
 /*
 Tengo que hacer algun metodo para revisar cual es el predicado que mas veces aparece para el default
 Debo recorrer la lista final, llamando a findall contando todos los ids que aparezcan con el nombre indicado en la lista. 
@@ -47,15 +52,19 @@ generarArbolDecisionShell(Default,Output) :-
                                     recuperarAtributosShell(Lista,ListaFinalAtributos),
                                     nl,
                                     obtenerValoresDeAtributos(ListaFinalAtributos,ListaEjemplos,[],ListaValoresAtributos),
+                                    write(Output,"digraph AD{\n"),
                                     writeln("node [shape = box]\n"),
                                     write(Output,"node [shape = box]\n"),
-                                    generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default,ListaValoresAtributos,0,0,[],Lista2,Output),close(Output).
+                                    generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default,ListaValoresAtributos,0,0,[],Lista2,Output),
+                                    write(Output,"}\n"),
+                                    close(Output).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-length(ListaEjemplos,Size),Size==0,escribirDOT(Default,Father,FatherValue,Listalabels,Lista2,Output).
 generarArbolDecision(ListaEjemplos,[],Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-calcularDefault(ListaEjemplos,Resultado),escribirDOT(Resultado,Father,FatherValue,ListaLabels,Lista2,Output).
 generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-verificarIgualesShell([(ID,Atributos,(_,Calificacion))|T]),escribirDOT(Calificacion,Father,FatherValue,ListaLabels,Lista2,Output).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-
                                                 auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),
-                                                calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),
+                                                obtenerListaClasificacionesTotal(ListaResultadoClasificaciones),
+                                                calcularMejorAtributo(ListaFinal,ListaAtributos,ListaResultadoClasificaciones,[],ListaNueva),
                                                 sumarAtributos(ListaAtributos,ListaNueva,[],ListaSumas),
                                                 length(ListaSumas,Size),
                                                 Size>0,
