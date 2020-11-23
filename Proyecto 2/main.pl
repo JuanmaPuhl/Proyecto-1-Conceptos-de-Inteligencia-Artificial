@@ -62,7 +62,7 @@ generarArbolDecisionShell(Default) :-
                                     generarArbolDecision(ListaEjemplos,ListaFinalAtributos,Default).
 generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-length(ListaEjemplos,Size),Size==0,writeln(Default).
 generarArbolDecision([(ID,Atributos,(_,Calificacion))|T],ListaAtributos,Default):-verificarIgualesShell([(Id,Atributos,(_,Calificacion))|T]),writeln(Calificacion).
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaFinal),!.
+generarArbolDecision(ListaEjemplos,ListaAtributos,Default):-writeln("Caso General"),auxiliar(ListaAtributos,ListaEjemplos,ListaFinal),write("\n\n\nResultado:\n"),writeln(ListaFinal),calcularMejorAtributo(ListaFinal,ListaAtributos,[inkjet,laser],[],ListaNueva),!.
 
 
 /*Estos metodos estan para recuperar la lista de atributos. Basicamente se recibe la lista de atributos y valores y se cicla hasta llegar al ultimo
@@ -143,7 +143,7 @@ Retorno el obtenido como el mejor
 
 
 calcularMejorAtributo(ListaDatos,[Attr|T],ListaClasificacion,ListaIntermedia,ListaFinal):-calcularAux1(ListaDatos,Attr,ListaClasificacion,ListaIntermedia,ListaFinal).
-calcularAux1(ListaDatos,Attr,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de las clasificaciones"),writeln(ListaIntermedia).
+calcularAux1(ListaDatos,Attr,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de las clasificaciones"),writeln(ListaIntermedia),ListaFinal = ListaIntermedia.
 calcularAux1(ListaDatos,Attr,[Clasificacion|T],ListaIntermedia,ListaFinal):-
     /*Tengo que obtener la lista de valores*/
     findall(Value,(member((Attr,ListaCantidades),ListaDatos),member((Clasificacion,Value,Cantidad),ListaCantidades)),ListaValores),
@@ -151,9 +151,10 @@ calcularAux1(ListaDatos,Attr,[Clasificacion|T],ListaIntermedia,ListaFinal):-
     writeln(ListaValores2),
     /*Ahora tengo que buscar para cada uno de los valores*/
     calcularAux2(ListaDatos,Attr,Clasificacion,ListaValores2,ListaIntermedia,ListaNueva),
-    calcularAux1(ListaDatos,Attr,T,ListaNueva,ListaFinal).
+    calcularAux1(ListaDatos,Attr,T,ListaNueva,ListaFinal),
+    writeln(ListaNueva).
 
-calcularAux2(ListaDatos,Attr,Clasificacion,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de los valores"),writeln(ListaIntermedia).
+calcularAux2(ListaDatos,Attr,Clasificacion,[],ListaIntermedia,ListaFinal):-writeln("Llegue al final de los valores"),writeln(ListaIntermedia),ListaFinal = ListaIntermedia.
 calcularAux2(ListaDatos,Attr,Clasificacion,[Valor|T],ListaIntermedia,ListaFinal):-
     /*Tengo que obtener el total para ese valor*/
     findall(Cantidad,(member((Attr,ListaCantidades),ListaDatos),member((total,Valor,Cantidad),ListaCantidades)),ListaTotal),
@@ -163,8 +164,11 @@ calcularAux2(ListaDatos,Attr,Clasificacion,[Valor|T],ListaIntermedia,ListaFinal)
     findall(Cantidad,(member((Attr,ListaCantidades),ListaDatos),member((Clasificacion,Valor,Cantidad),ListaCantidades)),ListaCantidad),
     nth0(0,ListaCantidad,Cantidad),
     writeln(Cantidad),
-    calcularAux2(ListaDatos,Attr,Clasificacion,T,ListaIntermedia,ListaFinal).
-
+    procesar(Attr,Total,Cantidad,ListaIntermedia,ListaNueva),
+    writeln(ListaNueva),
+    calcularAux2(ListaDatos,Attr,Clasificacion,T,ListaNueva,ListaFinal).
+procesar(Attr,Total,Cantidad,ListaIntermedia,ListaFinal):-Total == Cantidad, append([Attr],ListaIntermedia,ListaFinal),writeln("Entre aca").
+procesar(Attr,Total,Cantidad,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 /*Utilidades*/
 isEmpty(Str):-at_end_of_stream(Str).
 leer(InputFile) :- open(InputFile, read, Str), read_file(Str,Lines), close(Str),!.
