@@ -11,7 +11,7 @@ construirAD(InputFile,OutputFile):-
                                     atom_concat(Directory,'/',DestinoAux),
                                     atom_concat(DestinoAux,OutputFile,Destino),
                                     open(Destino,write,Output),
-                                    buscarDefault(ListaFinal,Default,Output),
+                                    generarArbolDecisionShell(Output),
                                     write("Se construyo exitosamente el AD en el archivo "),
                                     writeln(Destino),
                                     retractall(ejemplo(_,_,_)),
@@ -33,17 +33,13 @@ Debo recorrer la lista final, llamando a findall contando todos los ids que apar
 Para cada uno entonces debo guardar en una lista el par (Nombre,Cantidad) y una vez que termino entonces recorro y veo el mayor.
 Sort creo que los ordena.
 */
-buscarDefault(ListaInput, Default,Output):-
-                                    buscarApariciones(ListaInput,ListaOutput),
-                                    buscarMayor(ListaOutput,Default),
-                                    generarArbolDecisionShell(Default,Output).
-buscarApariciones(ListaInput,ListaOutput):-buscarAparicionesAux(ListaInput,[],ListaOutput).
-buscarAparicionesAux([],ListaIntermedia,ListaOutput):-append(ListaNueva,ListaIntermedia,ListaOutput),!.
-buscarAparicionesAux([H|T],ListaIntermedia,ListaOutput) :-
-                                    findall(ID, ejemplo(ID,_,H),ListaAux),
-                                    length(ListaAux,Cantidad),ListaNueva=[(Cantidad,H)],
-                                    append(ListaIntermedia,ListaNueva,ListaNueva2),
-                                    buscarAparicionesAux(T,ListaNueva2,ListaOutput).
+buscarApariciones(ListaInput,ListaOutput):-findall(H, member((_,_,(decision,H)),ListaInput),ListaAux),sort(ListaAux,ListaAux2),buscarAparicionesAux(ListaInput,ListaAux2,[],ListaOutput).
+buscarAparicionesAux(ListaInput,[],ListaIntermedia,ListaOutput):-append(ListaNueva,ListaIntermedia,ListaOutput),!.
+buscarAparicionesAux(ListaInput,[H|T],ListaIntermedia,ListaOutput) :-
+                                    findall(ID,member((ID,_,(_,H)),ListaInput),ListaAux),
+                                    length(ListaAux,Cantidad),
+                                    append([(Cantidad,H)],ListaIntermedia,ListaNueva2),
+                                    buscarAparicionesAux(ListaInput,T,ListaNueva2,ListaOutput).
 
 calcularDefault(ListaEjemplos,Default):-buscarApariciones(ListaEjemplos,ListaOutput),buscarMayor(ListaOutput,Default).
 
@@ -51,7 +47,7 @@ calcularDefault(ListaEjemplos,Default):-buscarApariciones(ListaEjemplos,ListaOut
 En la lista final tengo todo ordenado, sin repeticiones, y el primero es el que mas apariciones tiene
 */
 buscarMayor(ListaOutput,Default):-sort(ListaOutput,ListaOrdenada),reverse(ListaOrdenada,ListaFinal),obtenerMayor(ListaFinal,Default).
-obtenerMayor([(A,(B,C))|T],Default):- Default = C.
+obtenerMayor([(A,C)|T],Default):- Default = C.
 
 obtenerValoresDeAtributos([],ListaEjemplos,ListaIntermedia,ListaFinal):-ListaFinal = ListaIntermedia.
 obtenerValoresDeAtributos([Attr|T],ListaEjemplos,ListaIntermedia,ListaFinal):-
@@ -61,8 +57,9 @@ obtenerValoresDeAtributos([Attr|T],ListaEjemplos,ListaIntermedia,ListaFinal):-
                                     obtenerValoresDeAtributos(T,ListaEjemplos,ListaNueva,ListaFinal).
 
 /*Predicado principal para generar el arbol*/
-generarArbolDecisionShell(Default,Output) :-
+generarArbolDecisionShell(Output) :-
                                     findall((ID,Atributos,Clasificacion),ejemplo(ID,Atributos,Clasificacion),ListaEjemplos),
+                                    calcularDefault(ListaEjemplos,Default),
                                     findall(Atributos,ejemplo(1,Atributos,_),ListaAtributos),
                                     nth0(0,ListaAtributos,Lista),
                                     recuperarAtributosShell(Lista,ListaFinalAtributos),
@@ -83,9 +80,7 @@ Además se agregaron:
     Output, la referencia al archivo de salida*/  
 
 /*La lista de ejemplos está vacia*/                              
-generarArbolDecision(ListaEjemplos,ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-
-                                    length(ListaEjemplos,Size),
-                                    Size==0,
+generarArbolDecision([],ListaAtributos,Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-
                                     escribirDOT(Default,Father,FatherValue,Listalabels,Lista2,Output).
 /*La lista de atributos está vacia*/
 generarArbolDecision(ListaEjemplos,[],Default,ListaValores,Father,FatherValue,ListaLabels,Lista2,Output):-

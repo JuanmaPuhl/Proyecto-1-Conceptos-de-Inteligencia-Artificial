@@ -1,14 +1,14 @@
-ejemplo(1, [(dia, lv), (hora, manana), (paginas, pocas), (tipo, pdf), (tamano, grande)], (decision, inkjet)).
-ejemplo(2, [(dia, lv), (hora, tarde), (paginas, muchas), (tipo, doc), (tamano, mediano)], (decision, laser)).
-ejemplo(3, [(dia, lv), (hora, tarde), (paginas, muchas), (tipo, xls), (tamano, chico)], (decision, laser)).
-ejemplo(4, [(dia, lv), (hora, noche), (paginas, muchas), (tipo, doc), (tamano, mediano)], (decision, inkjet)).
-ejemplo(5, [(dia, lv), (hora, manana), (paginas, muchas), (tipo, pdf), (tamano, grande)], (decision, laser)).
-ejemplo(6, [(dia, lv), (hora, tarde), (paginas, pocas), (tipo, xls), (tamano, chico)], (decision, inkjet)).
-ejemplo(7, [(dia, lv), (hora, noche), (paginas, muchas), (tipo, xls), (tamano, chico)], (decision, inkjet)).
-ejemplo(8, [(dia, lv), (hora, tarde), (paginas, muchas), (tipo, doc), (tamano, chico)], (decision, laser)).
-ejemplo(9, [(dia, lv), (hora, tarde), (paginas, pocas), (tipo, doc), (tamano, chico)], (decision, inkjet)).
-ejemplo(10, [(dia, lv), (hora, noche), (paginas, muchas), (tipo, pdf), (tamano, grande)], (decision, inkjet)).
-ejemplo(11, [(dia, lv), (hora, manana), (paginas, muchas), (tipo, xls), (tamano, chico)], (decision, laser)).
-ejemplo(12, [(dia, finde), (hora, manana), (paginas, muchas), (tipo, pdf), (tamano, grande)], (decision, inkjet)).
-ejemplo(13, [(dia, finde), (hora, tarde), (paginas, muchas), (tipo, doc), (tamano, chico)], (decision, inkjet)).
-ejemplo(14, [(dia, finde), (hora, manana), (paginas, pocas), (tipo, doc), (tamano, grande)], (decision, inkjet)).
+ejemplo(1, [(dia, lv), (hora, manana), (paginas, pocas),  (tamano, grande)], (decision, inkjet)).
+ejemplo(2, [(dia, lv), (hora, tarde), (paginas, muchas),  (tamano, mediano)], (decision, laser)).
+ejemplo(3, [(dia, lv), (hora, tarde), (paginas, muchas),  (tamano, chico)], (decision, laser)).
+ejemplo(4, [(dia, lv), (hora, noche), (paginas, muchas),  (tamano, mediano)], (decision, inkjet)).
+ejemplo(5, [(dia, lv), (hora, manana), (paginas, muchas),  (tamano, grande)], (decision, laser)).
+ejemplo(6, [(dia, lv), (hora, tarde), (paginas, pocas),  (tamano, chico)], (decision, inkjet)).
+ejemplo(7, [(dia, lv), (hora, noche), (paginas, muchas),  (tamano, chico)], (decision, inkjet)).
+ejemplo(8, [(dia, lv), (hora, tarde), (paginas, muchas),  (tamano, chico)], (decision, laser)).
+ejemplo(9, [(dia, lv), (hora, tarde), (paginas, pocas),  (tamano, chico)], (decision, inkjet)).
+ejemplo(10, [(dia, lv), (hora, noche), (paginas, muchas),  (tamano, grande)], (decision, inkjet)).
+ejemplo(11, [(dia, lv), (hora, manana), (paginas, muchas),  (tamano, chico)], (decision, laser)).
+ejemplo(12, [(dia, finde), (hora, manana), (paginas, muchas),  (tamano, grande)], (decision, inkjet)).
+ejemplo(13, [(dia, finde), (hora, tarde), (paginas, muchas),  (tamano, chico)], (decision, inkjet)).
+ejemplo(14, [(dia, finde), (hora, manana), (paginas, pocas),  (tamano, grande)], (decision, inkjet)).
