@@ -1,0 +1,16 @@
+digraph AD{
+node [shape = box]
+capa1 [label=capa]
+corbata1 [label=corbata]
+capa1 -> corbata1[label = no]
+malo1 [label=malo]
+corbata1 -> malo1[label = no]
+fuma1 [label=fuma]
+corbata1 -> fuma1[label = si]
+bueno1 [label=bueno]
+fuma1 -> bueno1[label = no]
+malo2 [label=malo]
+fuma1 -> malo2[label = si]
+bueno2 [label=bueno]
+capa1 -> bueno2[label = si]
+}

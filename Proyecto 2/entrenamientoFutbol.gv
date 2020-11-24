@@ -1,0 +1,18 @@
+digraph AD{
+node [shape = box]
+humidity1 [label=humidity]
+outlook1 [label=outlook]
+humidity1 -> outlook1[label = high]
+yes1 [label=yes]
+outlook1 -> yes1[label = overcast]
+wind1 [label=wind]
+outlook1 -> wind1[label = rain]
+no1 [label=no]
+wind1 -> no1[label = strong]
+yes2 [label=yes]
+wind1 -> yes2[label = weak]
+no2 [label=no]
+outlook1 -> no2[label = sunny]
+yes3 [label=yes]
+humidity1 -> yes3[label = normal]
+}
